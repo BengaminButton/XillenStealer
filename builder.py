@@ -519,12 +519,12 @@ class XillenBuilder:
     def log(self, message):
         try:
             if hasattr(self, 'log_area') and self.log_area:
-        self.log_area.config(state=tk.NORMAL)
-        self.log_area.insert(tk.END, f"> {message}\n")
-        self.log_area.see(tk.END)
-        self.log_area.config(state=tk.DISABLED)
+                self.log_area.config(state=tk.NORMAL)
+                self.log_area.insert(tk.END, f"> {message}\n")
+                self.log_area.see(tk.END)
+                self.log_area.config(state=tk.DISABLED)
             if hasattr(self, 'status_label') and self.status_label:
-        self.status_label.config(text=message)
+                self.status_label.config(text=message)
         except Exception:
             pass
 
@@ -731,8 +731,8 @@ class XillenBuilder:
                                    fg=fg_color,
                                    hover_bg=hover_bg,
                                    hover_fg=hover_fg,
-                font=self.button_font,
-                padx=30,
+                                   font=self.button_font,
+                                   padx=30,
                                    pady=12)
             btn.pack(side=tk.LEFT, padx=10)
 
@@ -787,14 +787,14 @@ class XillenBuilder:
         
         btn_frame = tk.Frame(dialog, bg=COLORS['card_bg'])
         btn_frame.pack(pady=(0, 30))
-            
-            def compile_exe():
+
+        def compile_exe():
             overlay.destroy()
-                if self.os_type != "Windows":
-                    messagebox.showwarning("Ошибка", "Компиляция в EXE доступна только на Windows!")
-                    return
-                threading.Thread(target=self._compile_exe, args=(output_path, name), daemon=True).start()
-            
+            if self.os_type != "Windows":
+                messagebox.showwarning("Ошибка", "Компиляция в EXE доступна только на Windows!")
+                return
+            threading.Thread(target=self._compile_exe, args=(output_path, name), daemon=True).start()
+
         def cancel():
             overlay.destroy()
             self.log("Сборка EXE отменена.")
