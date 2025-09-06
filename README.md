@@ -143,8 +143,8 @@ source venv/bin/activate && python3 builder.py
    ```
 2. Запустите скрипт от имени администратора:
    ```bash
-   python antidote.py
-   ```с
+   python XillenStealerAntiDot.py
+   ```
 
 > Если что-то останется — скрипт покажет, что именно, и даст рекомендации.
 
