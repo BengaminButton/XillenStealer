@@ -1,0 +1,46 @@
+{
+  "name": "xillen-stealer-builder",
+  "version": "4.0.0",
+  "description": "XillenStealer Builder V4.0 - Advanced Stealer Builder with Modern UI",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron . --dev",
+    "build": "electron-builder",
+    "dist": "electron-builder --publish=never"
+  },
+  "keywords": [
+    "stealer",
+    "builder",
+    "electron",
+    "xillen"
+  ],
+  "author": "XillenKillers Team",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^27.0.0",
+    "electron-builder": "^24.6.4"
+  },
+  "build": {
+    "appId": "com.xillenkillers.stealerbuilder",
+    "productName": "XillenStealer Builder",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "**/*",
+      "!node_modules",
+      "!dist",
+      "!*.md"
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "renderer/assets/icon.ico",
+      "sign": false
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
+  }
+}
