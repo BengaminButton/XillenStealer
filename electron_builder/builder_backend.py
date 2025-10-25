@@ -103,7 +103,9 @@ exe = EXE(
     distpath={repr(OUTPUT_DIR)},
 )
 """
-        spec_path = os.path.join(os.path.dirname(OUTPUT_DIR), "builds", f"{name}.spec")
+        builds_dir = os.path.join(os.path.dirname(OUTPUT_DIR), "builds")
+        os.makedirs(builds_dir, exist_ok=True)
+        spec_path = os.path.join(builds_dir, f"{name}.spec")
         with open(spec_path, "w", encoding="utf-8") as f:
             f.write(spec_content)
         
