@@ -1,0 +1,25 @@
+# XillenStealer V4.0 - Python Dependencies
+# Core dependencies
+requests>=2.31.0
+psutil>=5.9.8
+pillow>=10.3.0
+
+# Cryptography and security
+pycryptodome>=3.20.0
+secretstorage>=3.3.1
+
+# Browser data extraction
+browser-cookie3>=0.19.1
+
+# Telegram integration
+pyTelegramBotAPI>=4.12.0
+
+# System monitoring
+gputil>=1.4.0
+
+# GUI (for legacy builder)
+ttkbootstrap>=1.10.1
+
+# Additional utilities
+colorama>=0.4.6
+cryptography>=41.0.0
