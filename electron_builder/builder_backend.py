@@ -86,8 +86,10 @@ pyz = PYZ(a.pure, cipher=block_cipher)
 exe = EXE(
     pyz,
     a.scripts,
+    a.binaries,
+    a.zipfiles,
+    a.datas,
     [],
-    exclude_binaries=True,
     name='{name}',
     debug=False,
     bootloader_ignore_signals=False,
@@ -101,6 +103,7 @@ exe = EXE(
     entitlements_file=None,
     icon={repr(icon_path) if icon_path else 'None'},
     distpath={repr(OUTPUT_DIR)},
+    onefile=True,
 )
 """
         builds_dir = os.path.join(os.path.dirname(OUTPUT_DIR), "builds")
