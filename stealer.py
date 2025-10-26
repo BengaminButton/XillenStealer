@@ -3907,7 +3907,7 @@ def decrypt_chrome_password(ciphertext, master_key):
         </style>
         <script>
             function saveAsTxt() {{
-                const content = `{generate_txt_report_v4(collected_data, language).replace('`', '\\`')}`;
+                const content = {json.dumps(generate_txt_report_v4(collected_data, language))};
                 const blob = new Blob([content], {{ type: 'text/plain' }});
                 const url = URL.createObjectURL(blob);
                 const a = document.createElement('a');
