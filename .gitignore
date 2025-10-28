@@ -41,6 +41,12 @@ dist/
 *.exe
 *.pyc
 
+# Large files
+*.zip
+*.asar
+electron_builder/dist_release/
+XillenStealer-V4-Builder-Windows.zip
+
 # Node.js
 node_modules/
 npm-debug.log*

