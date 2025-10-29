@@ -87,7 +87,7 @@
 
 ## 📊 Пример HTML отчёта
 <div align="center">
-  <img width="800" height="400" alt="HTML Report Example" src="https://github.com/user-attachments/assets/30adc8b1-e9b2-4a82-a2cf-7fb967f7b5dd" />
+  <img width="800" height="400" alt="HTML Report Example" src="https://github.com/user-attachments/assets/984e1ff6-5d61-45ec-92fe-77bef913ef08" />
 </div>
 
 ## 🌐 Поддерживаемые браузеры
