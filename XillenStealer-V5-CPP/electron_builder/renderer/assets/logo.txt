@@ -1,0 +1,26 @@
+# ИДЕАЛЬНЫЙ ПРОМПТ ДЛЯ ЛОГОТИПА XILLENSTEALER
+
+## Основной промпт (рекомендуемый):
+```
+Minimalist cyberpunk logo for "XillenStealer", dark theme with neon green accent (#34D399), geometric "X" symbol made from circuit board traces, binary code flowing through circuits, skull silhouette integrated into the design, glowing edges with subtle tech pattern, hacker aesthetic, clean modern lines, transparent background, 512x512px PNG, suitable for dark UI applications
+```
+
+## Альтернативный промпт:
+```
+Dark minimalist logo: stylized "X" symbol with circuit board texture, neon green glow (#34D399), skull or anonymous mask silhouette subtly integrated, binary code elements, tech aesthetic, glowing effect, black background with subtle cyberpunk pattern, modern clean design, 512x512px PNG, transparent background
+```
+
+## Простой промпт:
+```
+Cyberpunk "X" logo, neon green (#34D399), circuit board pattern, skull silhouette, binary code, glowing edges, dark theme, minimalist design, 512x512px PNG, transparent background
+```
+
+## Требования:
+- Размер: 512x512px
+- Формат: PNG с прозрачным фоном
+- Цвет: неоновый зеленый (#34D399) на темном фоне
+- Стиль: киберпанк, минимализм, хакерская эстетика
+- Элементы: буква "X", схемы, череп, бинарный код
+- Без текста "XillenStealer Builder" - только логотип
+
+Сохраните результат как logo.png в этой папке

