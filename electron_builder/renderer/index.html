@@ -3,13 +3,31 @@
   <head>
     <meta charset="utf-8" />
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: file:;" />
-    <title>XillenStealer Builder V4.0</title>
+    <title>XillenStealer Builder V5.0</title>
     <link rel="stylesheet" href="style.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   </head>
   <body>
+    <!-- Назойливый баннер V5.0 - ВЕЗДЕ! -->
+    <div class="annoying-banner" id="annoyingBanner">
+      <a href="https://t.me/XillenStealer" target="_blank" class="banner-link">
+        <span class="banner-text">🔥 V5.0 - t.me/XillenStealer 🔥</span>
+        <span class="banner-pulse">⚡ Обновись до V5.0! ⚡</span>
+      </a>
+      <button class="banner-close" id="bannerClose" onclick="return false;">&times;</button>
+    </div>
+    
+    <!-- Дополнительный баннер в центре экрана -->
+    <div class="floating-banner" id="floatingBanner">
+      <div class="floating-content">
+        <h2>🚀 НОВАЯ ВЕРСИЯ!</h2>
+        <p>XillenStealer V5.0 уже доступна!</p>
+        <a href="https://t.me/XillenStealer" target="_blank" class="upgrade-btn">Перейти на V5.0</a>
+        <button class="floating-close" id="floatingClose">&times;</button>
+      </div>
+    </div>
     <div class="rain-container" id="rainContainer"></div>
     <div class="notification-container" id="notificationContainer"></div>
     
@@ -20,6 +38,11 @@
           <img src="assets/logo.png" alt="XillenStealer" class="auth-logo" />
           <h1 data-translate="auth.title">XillenStealer Builder</h1>
           <p data-translate="auth.version">v4.0</p>
+          <div style="margin-top: 15px; padding: 10px; background: rgba(255, 0, 0, 0.2); border-radius: 8px; border: 2px solid #ff0000;">
+            <a href="https://t.me/XillenStealer" target="_blank" style="color: #ff0000; font-weight: 900; text-decoration: none; font-size: 16px;">
+              🔥 V5.0 - t.me/XillenStealer 🔥
+            </a>
+          </div>
         </div>
         <div class="auth-form">
           <h2 data-translate="auth.login">Аутентификация</h2>
@@ -57,6 +80,13 @@
       <div id="rainContainer" class="rain-container"></div>
       
       <div class="sidebar">
+        <!-- Баннер V5.0 в сайдбаре -->
+        <div class="sidebar-banner">
+          <a href="https://t.me/XillenStealer" target="_blank" class="sidebar-banner-link">
+            <span class="sidebar-banner-text">🔥 V5.0 доступна!</span>
+            <span class="sidebar-banner-link-text">t.me/XillenStealer</span>
+          </a>
+        </div>
         <div class="brand">
           <img src="assets/logo.png" alt="Xillen" class="logo" />
         </div>
@@ -98,6 +128,11 @@
       <div class="content">
         <header class="topbar">
           <div class="title" data-translate="app.title">XillenStealer Builder V4.0</div>
+          <div class="topbar-v5-banner">
+            <a href="https://t.me/XillenStealer" target="_blank" class="topbar-v5-link">
+              🔥 V5.0 - t.me/XillenStealer 🔥
+            </a>
+          </div>
           <div class="topbar-actions">
             <button id="refreshBtn" class="btn" data-translate="topbar.refresh">Обновить</button>
             <button id="settingsBtn" class="btn" data-translate="topbar.settings">Настройки</button>
@@ -171,8 +206,7 @@
                 <div class="form-group">
                   <label data-translate="create.icon">Иконка EXE:</label>
                   <div class="file-input-wrapper">
-                    <input id="exeIcon" type="file" accept=".ico,.png,.jpg,.jpeg" style="display: none;" />
-                    <button type="button" class="file-select-btn" onclick="document.getElementById('exeIcon').click()">
+                    <button type="button" id="selectIconBtn" class="file-select-btn">
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
                       </svg>
