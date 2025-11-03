@@ -2580,22 +2580,6 @@ body, .card, .btn, .module-item {
   opacity: 0.9;
 }
 
-.banner-icon-small {
-  animation: bannerIconPulse 1.5s ease-in-out infinite;
-  opacity: 0.8;
-}
-
-@keyframes bannerIconPulse {
-  0%, 100% {
-    opacity: 0.8;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 1;
-    transform: scale(1.1);
-  }
-}
-
 .banner-text {
   display: inline-block;
   animation: bannerBlink 1.5s ease-in-out infinite;
@@ -2941,7 +2925,11 @@ body, .card, .btn, .module-item {
 }
 
 .topbar-v5-link svg {
-  animation: bannerIconPulse 2s ease-in-out infinite;
+  transition: transform 0.3s ease;
+}
+
+.topbar-v5-link:hover svg {
+  transform: scale(1.1);
 }
 
 @keyframes topbarBannerPulse {
