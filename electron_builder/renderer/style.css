@@ -2537,3 +2537,367 @@ body, .card, .btn, .module-item {
   border: 1px solid var(--border);
   word-break: break-all;
 }
+
+/* Назойливый баннер V5.0 */
+.annoying-banner {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 99999;
+  background: linear-gradient(135deg, #ff0000 0%, #ff6600 50%, #ff0000 100%);
+  background-size: 200% 200%;
+  padding: 12px 20px;
+  text-align: center;
+  box-shadow: 0 4px 20px rgba(255, 0, 0, 0.5);
+  animation: bannerPulse 2s ease-in-out infinite, bannerSlide 0.8s ease-out;
+  border-bottom: 3px solid #fff;
+  pointer-events: auto;
+}
+
+.annoying-banner .banner-link {
+  display: block;
+  text-decoration: none;
+  color: #fff;
+  font-weight: 900;
+  font-size: 18px;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+  letter-spacing: 2px;
+  transition: all 0.3s ease;
+  pointer-events: auto;
+}
+
+.annoying-banner .banner-link:hover {
+  transform: scale(1.1);
+  text-shadow: 3px 3px 6px rgba(0, 0, 0, 1);
+}
+
+.banner-text {
+  display: inline-block;
+  animation: bannerBlink 1.5s ease-in-out infinite;
+}
+
+@keyframes bannerPulse {
+  0%, 100% {
+    background-position: 0% 50%;
+    opacity: 1;
+  }
+  50% {
+    background-position: 100% 50%;
+    opacity: 0.95;
+  }
+}
+
+@keyframes bannerSlide {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes bannerBlink {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.05);
+  }
+}
+
+/* Баннер должен быть виден поверх всего */
+.auth-screen {
+  padding-top: 50px;
+}
+
+.main-app {
+  padding-top: 50px;
+}
+
+/* Дополнительные стили для назойливого баннера */
+.annoying-banner {
+  cursor: pointer;
+}
+
+.annoying-banner:active {
+  transform: scale(0.98);
+}
+
+.banner-pulse {
+  display: inline-block;
+  margin-left: 15px;
+  animation: bannerPulseText 1s ease-in-out infinite;
+  font-size: 16px;
+}
+
+.banner-close {
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255, 255, 255, 0.3);
+  border: none;
+  color: #fff;
+  font-size: 24px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  pointer-events: auto;
+}
+
+.banner-close:hover {
+  background: rgba(255, 255, 255, 0.5);
+  transform: translateY(-50%) scale(1.1);
+}
+
+.banner-close:active {
+  transform: translateY(-50%) scale(0.9);
+}
+
+@keyframes bannerPulseText {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(1.1);
+  }
+}
+
+/* Плавающий баннер в центре экрана */
+.floating-banner {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 999999;
+  display: none;
+  pointer-events: none;
+}
+
+.floating-banner.show {
+  display: block;
+  animation: floatingShow 0.5s ease-out;
+  pointer-events: auto;
+}
+
+.floating-content {
+  background: linear-gradient(135deg, #ff0000 0%, #ff6600 100%);
+  padding: 40px 60px;
+  border-radius: 20px;
+  box-shadow: 0 10px 40px rgba(255, 0, 0, 0.7);
+  text-align: center;
+  border: 4px solid #fff;
+  position: relative;
+  animation: floatingPulse 2s ease-in-out infinite;
+}
+
+.floating-content h2 {
+  color: #fff;
+  font-size: 32px;
+  margin: 0 0 15px 0;
+  text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.8);
+  animation: floatingTextShake 0.5s ease-in-out infinite;
+}
+
+.floating-content p {
+  color: #fff;
+  font-size: 20px;
+  margin: 0 0 25px 0;
+  font-weight: 600;
+}
+
+.upgrade-btn {
+  display: inline-block;
+  background: #fff;
+  color: #ff0000;
+  padding: 15px 40px;
+  border-radius: 30px;
+  text-decoration: none;
+  font-weight: 900;
+  font-size: 18px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  transition: all 0.3s ease;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  animation: buttonPulse 1.5s ease-in-out infinite;
+}
+
+.upgrade-btn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+  background: #ffeb3b;
+}
+
+.floating-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(255, 255, 255, 0.3);
+  border: none;
+  color: #fff;
+  font-size: 28px;
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  line-height: 35px;
+}
+
+.floating-close:hover {
+  background: rgba(255, 255, 255, 0.5);
+  transform: scale(1.1);
+}
+
+@keyframes floatingShow {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.5);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+@keyframes floatingPulse {
+  0%, 100% {
+    box-shadow: 0 10px 40px rgba(255, 0, 0, 0.7);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 15px 50px rgba(255, 0, 0, 0.9);
+    transform: scale(1.02);
+  }
+}
+
+@keyframes floatingTextShake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-3px);
+  }
+  75% {
+    transform: translateX(3px);
+  }
+}
+
+@keyframes buttonPulse {
+  0%, 100% {
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  }
+  50% {
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
+  }
+}
+
+/* Баннер в сайдбаре */
+.sidebar-banner {
+  background: linear-gradient(135deg, #ff0000 0%, #ff6600 100%);
+  padding: 12px;
+  margin: 10px;
+  border-radius: 8px;
+  text-align: center;
+  box-shadow: 0 4px 15px rgba(255, 0, 0, 0.5);
+  animation: sidebarBannerPulse 2s ease-in-out infinite;
+  border: 2px solid #fff;
+}
+
+.sidebar-banner-link {
+  display: block;
+  text-decoration: none;
+  color: #fff;
+  cursor: pointer;
+}
+
+.sidebar-banner-text {
+  display: block;
+  font-weight: 900;
+  font-size: 14px;
+  margin-bottom: 5px;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+  animation: sidebarBannerTextBlink 1.5s ease-in-out infinite;
+}
+
+.sidebar-banner-link-text {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  opacity: 0.9;
+}
+
+.sidebar-banner:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 20px rgba(255, 0, 0, 0.7);
+}
+
+@keyframes sidebarBannerPulse {
+  0%, 100% {
+    box-shadow: 0 4px 15px rgba(255, 0, 0, 0.5);
+  }
+  50% {
+    box-shadow: 0 6px 20px rgba(255, 0, 0, 0.8);
+  }
+}
+
+@keyframes sidebarBannerTextBlink {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+/* Баннер в верхней панели */
+.topbar-v5-banner {
+  flex: 1;
+  text-align: center;
+  margin: 0 20px;
+}
+
+.topbar-v5-link {
+  display: inline-block;
+  background: linear-gradient(135deg, #ff0000 0%, #ff6600 100%);
+  color: #fff;
+  padding: 8px 20px;
+  border-radius: 20px;
+  text-decoration: none;
+  font-weight: 900;
+  font-size: 14px;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+  box-shadow: 0 4px 15px rgba(255, 0, 0, 0.5);
+  animation: topbarBannerPulse 2s ease-in-out infinite;
+  transition: all 0.3s ease;
+  border: 2px solid #fff;
+}
+
+.topbar-v5-link:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 20px rgba(255, 0, 0, 0.8);
+}
+
+@keyframes topbarBannerPulse {
+  0%, 100% {
+    box-shadow: 0 4px 15px rgba(255, 0, 0, 0.5);
+  }
+  50% {
+    box-shadow: 0 6px 20px rgba(255, 0, 0, 0.8);
+  }
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
