@@ -2538,38 +2538,62 @@ body, .card, .btn, .module-item {
   word-break: break-all;
 }
 
-/* Назойливый баннер V5.0 */
+/* Назойливый баннер V5.0 - помягче цвета */
 .annoying-banner {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   z-index: 99999;
-  background: linear-gradient(135deg, #ff0000 0%, #ff6600 50%, #ff0000 100%);
+  background: linear-gradient(135deg, #ff9800 0%, #ffb74d 50%, #ff9800 100%);
   background-size: 200% 200%;
   padding: 12px 20px;
   text-align: center;
-  box-shadow: 0 4px 20px rgba(255, 0, 0, 0.5);
-  animation: bannerPulse 2s ease-in-out infinite, bannerSlide 0.8s ease-out;
-  border-bottom: 3px solid #fff;
+  box-shadow: 0 2px 15px rgba(255, 152, 0, 0.3);
+  animation: bannerPulse 3s ease-in-out infinite, bannerSlide 0.8s ease-out;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.3);
   pointer-events: auto;
 }
 
 .annoying-banner .banner-link {
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
   text-decoration: none;
   color: #fff;
-  font-weight: 900;
-  font-size: 18px;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
-  letter-spacing: 2px;
+  font-weight: 700;
+  font-size: 16px;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+  letter-spacing: 1px;
   transition: all 0.3s ease;
   pointer-events: auto;
 }
 
 .annoying-banner .banner-link:hover {
-  transform: scale(1.1);
-  text-shadow: 3px 3px 6px rgba(0, 0, 0, 1);
+  transform: scale(1.02);
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+}
+
+.banner-icon {
+  animation: bannerIconPulse 2s ease-in-out infinite;
+  opacity: 0.9;
+}
+
+.banner-icon-small {
+  animation: bannerIconPulse 1.5s ease-in-out infinite;
+  opacity: 0.8;
+}
+
+@keyframes bannerIconPulse {
+  0%, 100% {
+    opacity: 0.8;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
 }
 
 .banner-text {
@@ -2690,14 +2714,29 @@ body, .card, .btn, .module-item {
 }
 
 .floating-content {
-  background: linear-gradient(135deg, #ff0000 0%, #ff6600 100%);
+  background: linear-gradient(135deg, #ff9800 0%, #ffb74d 100%);
   padding: 40px 60px;
   border-radius: 20px;
-  box-shadow: 0 10px 40px rgba(255, 0, 0, 0.7);
+  box-shadow: 0 8px 30px rgba(255, 152, 0, 0.4);
   text-align: center;
-  border: 4px solid #fff;
+  border: 3px solid rgba(255, 255, 255, 0.8);
   position: relative;
-  animation: floatingPulse 2s ease-in-out infinite;
+  animation: floatingPulse 3s ease-in-out infinite;
+}
+
+.floating-icon {
+  margin-bottom: 15px;
+  opacity: 0.95;
+  animation: floatingIconFloat 2s ease-in-out infinite;
+}
+
+@keyframes floatingIconFloat {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
 }
 
 .floating-content h2 {
@@ -2716,25 +2755,36 @@ body, .card, .btn, .module-item {
 }
 
 .upgrade-btn {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
   background: #fff;
-  color: #ff0000;
+  color: #ff9800;
   padding: 15px 40px;
   border-radius: 30px;
   text-decoration: none;
-  font-weight: 900;
-  font-size: 18px;
+  font-weight: 700;
+  font-size: 16px;
   text-transform: uppercase;
-  letter-spacing: 2px;
+  letter-spacing: 1.5px;
   transition: all 0.3s ease;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-  animation: buttonPulse 1.5s ease-in-out infinite;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  animation: buttonPulse 2s ease-in-out infinite;
 }
 
 .upgrade-btn:hover {
-  transform: scale(1.1);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
-  background: #ffeb3b;
+  transform: scale(1.05);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+  background: #fff9c4;
+  color: #ff9800;
+}
+
+.upgrade-btn svg {
+  transition: transform 0.3s ease;
+}
+
+.upgrade-btn:hover svg {
+  transform: translateX(3px);
 }
 
 .floating-close {
@@ -2771,12 +2821,12 @@ body, .card, .btn, .module-item {
 
 @keyframes floatingPulse {
   0%, 100% {
-    box-shadow: 0 10px 40px rgba(255, 0, 0, 0.7);
+    box-shadow: 0 8px 30px rgba(255, 152, 0, 0.4);
     transform: scale(1);
   }
   50% {
-    box-shadow: 0 15px 50px rgba(255, 0, 0, 0.9);
-    transform: scale(1.02);
+    box-shadow: 0 12px 40px rgba(255, 152, 0, 0.6);
+    transform: scale(1.01);
   }
 }
 
@@ -2785,32 +2835,32 @@ body, .card, .btn, .module-item {
     transform: translateX(0);
   }
   25% {
-    transform: translateX(-3px);
+    transform: translateX(-2px);
   }
   75% {
-    transform: translateX(3px);
+    transform: translateX(2px);
   }
 }
 
 @keyframes buttonPulse {
   0%, 100% {
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   }
   50% {
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
   }
 }
 
-/* Баннер в сайдбаре */
+/* Баннер в сайдбаре - помягче */
 .sidebar-banner {
-  background: linear-gradient(135deg, #ff0000 0%, #ff6600 100%);
+  background: linear-gradient(135deg, #ff9800 0%, #ffb74d 100%);
   padding: 12px;
   margin: 10px;
   border-radius: 8px;
   text-align: center;
-  box-shadow: 0 4px 15px rgba(255, 0, 0, 0.5);
-  animation: sidebarBannerPulse 2s ease-in-out infinite;
-  border: 2px solid #fff;
+  box-shadow: 0 3px 12px rgba(255, 152, 0, 0.3);
+  animation: sidebarBannerPulse 3s ease-in-out infinite;
+  border: 2px solid rgba(255, 255, 255, 0.3);
 }
 
 .sidebar-banner-link {
@@ -2843,10 +2893,10 @@ body, .card, .btn, .module-item {
 
 @keyframes sidebarBannerPulse {
   0%, 100% {
-    box-shadow: 0 4px 15px rgba(255, 0, 0, 0.5);
+    box-shadow: 0 3px 12px rgba(255, 152, 0, 0.3);
   }
   50% {
-    box-shadow: 0 6px 20px rgba(255, 0, 0, 0.8);
+    box-shadow: 0 5px 18px rgba(255, 152, 0, 0.5);
   }
 }
 
@@ -2859,7 +2909,7 @@ body, .card, .btn, .module-item {
   }
 }
 
-/* Баннер в верхней панели */
+/* Баннер в верхней панели - помягче */
 .topbar-v5-banner {
   flex: 1;
   text-align: center;
@@ -2867,32 +2917,38 @@ body, .card, .btn, .module-item {
 }
 
 .topbar-v5-link {
-  display: inline-block;
-  background: linear-gradient(135deg, #ff0000 0%, #ff6600 100%);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #ff9800 0%, #ffb74d 100%);
   color: #fff;
   padding: 8px 20px;
   border-radius: 20px;
   text-decoration: none;
-  font-weight: 900;
+  font-weight: 700;
   font-size: 14px;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
-  box-shadow: 0 4px 15px rgba(255, 0, 0, 0.5);
-  animation: topbarBannerPulse 2s ease-in-out infinite;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 3px 12px rgba(255, 152, 0, 0.3);
+  animation: topbarBannerPulse 3s ease-in-out infinite;
   transition: all 0.3s ease;
-  border: 2px solid #fff;
+  border: 2px solid rgba(255, 255, 255, 0.3);
 }
 
 .topbar-v5-link:hover {
-  transform: scale(1.1);
-  box-shadow: 0 6px 20px rgba(255, 0, 0, 0.8);
+  transform: scale(1.05);
+  box-shadow: 0 5px 18px rgba(255, 152, 0, 0.5);
+}
+
+.topbar-v5-link svg {
+  animation: bannerIconPulse 2s ease-in-out infinite;
 }
 
 @keyframes topbarBannerPulse {
   0%, 100% {
-    box-shadow: 0 4px 15px rgba(255, 0, 0, 0.5);
+    box-shadow: 0 3px 12px rgba(255, 152, 0, 0.3);
   }
   50% {
-    box-shadow: 0 6px 20px rgba(255, 0, 0, 0.8);
+    box-shadow: 0 5px 18px rgba(255, 152, 0, 0.5);
   }
 }
 
