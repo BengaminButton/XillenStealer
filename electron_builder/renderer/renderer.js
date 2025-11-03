@@ -1627,17 +1627,6 @@ async function checkPassword() {
     console.log('Password check result:', isValid);
     
     if (isValid) {
-      // Показываем плавающий баннер V5.0 при успешном входе (недолго)
-      const floatingBanner = document.getElementById('floatingBanner');
-      if (floatingBanner) {
-        floatingBanner.classList.add('show');
-        
-        // Автоматически скрываем через 6 секунд
-        setTimeout(() => {
-          floatingBanner.classList.remove('show');
-        }, 6000);
-      }
-      
       document.getElementById('authScreen').style.display = 'none';
       document.getElementById('mainApp').style.display = 'flex';
       showNotification('success', 'Успешно', 'Добро пожаловать!');
@@ -1788,51 +1777,7 @@ document.addEventListener('DOMContentLoaded', () => {
   updateUI(); // Update translations after DOM is loaded
   setupTelegramPreview();
   
-  // Назойливый баннер - не даем закрыть!
-  const bannerClose = document.getElementById('bannerClose');
-  if (bannerClose) {
-    bannerClose.addEventListener('click', (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      // Показываем уведомление вместо закрытия
-      showNotification('info', 'V5.0 доступна!', 'Переходи на t.me/XillenStealer для получения новой версии!');
-    });
-  }
-  
-  // Плавающий баннер - закрытие
-  const floatingClose = document.getElementById('floatingClose');
-  if (floatingClose) {
-    floatingClose.addEventListener('click', () => {
-      const floatingBanner = document.getElementById('floatingBanner');
-      if (floatingBanner) {
-        floatingBanner.classList.remove('show');
-      }
-    });
-  }
-  
-  // Показываем плавающий баннер через 5 секунд после загрузки (менее назойливо)
-  setTimeout(() => {
-    const floatingBanner = document.getElementById('floatingBanner');
-    if (floatingBanner && document.getElementById('authScreen').style.display !== 'none') {
-      floatingBanner.classList.add('show');
-      
-      // Автоматически скрываем через 6 секунд
-      setTimeout(() => {
-        floatingBanner.classList.remove('show');
-      }, 6000);
-    }
-  }, 5000);
-  
-  // Периодически показываем баннер каждые 3 минуты (не так часто)
-  setInterval(() => {
-    const floatingBanner = document.getElementById('floatingBanner');
-    if (floatingBanner && document.getElementById('authScreen').style.display === 'none') {
-      floatingBanner.classList.add('show');
-      setTimeout(() => {
-        floatingBanner.classList.remove('show');
-      }, 6000);
-    }
-  }, 180000); // 3 минуты вместо 60 секунд
+  // Всплывающий баннер отключен для уменьшения назойливости
   
   // Setup language selector
   const languageSelect = document.getElementById('languageSelect');
@@ -1865,7 +1810,6 @@ document.addEventListener('DOMContentLoaded', () => {
   
   log('Система готова к работе');
   log('Интерфейс загружен');
-  log('V5.0 доступна на t.me/XillenStealer');
   
   const savedTheme = localStorage.getItem('xillen_theme') || 'deep_dark';
   switchTheme(savedTheme);

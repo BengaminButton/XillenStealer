@@ -2538,21 +2538,9 @@ body, .card, .btn, .module-item {
   word-break: break-all;
 }
 
-/* Назойливый баннер V5.0 - помягче цвета */
+/* Верхний баннер (скрыт) */
 .annoying-banner {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 99999;
-  background: linear-gradient(135deg, #ff9800 0%, #ffb74d 50%, #ff9800 100%);
-  background-size: 200% 200%;
-  padding: 12px 20px;
-  text-align: center;
-  box-shadow: 0 2px 15px rgba(255, 152, 0, 0.3);
-  animation: bannerPulse 3s ease-in-out infinite, bannerSlide 0.8s ease-out;
-  border-bottom: 2px solid rgba(255, 255, 255, 0.3);
-  pointer-events: auto;
+  display: none;
 }
 
 .annoying-banner .banner-link {
@@ -2632,11 +2620,11 @@ body, .card, .btn, .module-item {
 
 /* Баннер должен быть виден поверх всего */
 .auth-screen {
-  padding-top: 50px;
+  padding-top: 0;
 }
 
 .main-app {
-  padding-top: 50px;
+  padding-top: 0;
 }
 
 /* Дополнительные стили для назойливого баннера */
