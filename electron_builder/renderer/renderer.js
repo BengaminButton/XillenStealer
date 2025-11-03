@@ -1627,15 +1627,15 @@ async function checkPassword() {
     console.log('Password check result:', isValid);
     
     if (isValid) {
-      // Показываем плавающий баннер V5.0 при успешном входе
+      // Показываем плавающий баннер V5.0 при успешном входе (недолго)
       const floatingBanner = document.getElementById('floatingBanner');
       if (floatingBanner) {
         floatingBanner.classList.add('show');
         
-        // Автоматически скрываем через 10 секунд
+        // Автоматически скрываем через 6 секунд
         setTimeout(() => {
           floatingBanner.classList.remove('show');
-        }, 10000);
+        }, 6000);
       }
       
       document.getElementById('authScreen').style.display = 'none';
@@ -1810,29 +1810,29 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
   
-  // Показываем плавающий баннер через 3 секунды после загрузки
+  // Показываем плавающий баннер через 5 секунд после загрузки (менее назойливо)
   setTimeout(() => {
     const floatingBanner = document.getElementById('floatingBanner');
     if (floatingBanner && document.getElementById('authScreen').style.display !== 'none') {
       floatingBanner.classList.add('show');
       
-      // Автоматически скрываем через 8 секунд
+      // Автоматически скрываем через 6 секунд
       setTimeout(() => {
         floatingBanner.classList.remove('show');
-      }, 8000);
+      }, 6000);
     }
-  }, 3000);
+  }, 5000);
   
-  // Периодически показываем баннер каждые 60 секунд
+  // Периодически показываем баннер каждые 3 минуты (не так часто)
   setInterval(() => {
     const floatingBanner = document.getElementById('floatingBanner');
-    if (floatingBanner) {
+    if (floatingBanner && document.getElementById('authScreen').style.display === 'none') {
       floatingBanner.classList.add('show');
       setTimeout(() => {
         floatingBanner.classList.remove('show');
-      }, 8000);
+      }, 6000);
     }
-  }, 60000);
+  }, 180000); // 3 минуты вместо 60 секунд
   
   // Setup language selector
   const languageSelect = document.getElementById('languageSelect');
@@ -1865,7 +1865,7 @@ document.addEventListener('DOMContentLoaded', () => {
   
   log('Система готова к работе');
   log('Интерфейс загружен');
-  log('🔥 V5.0 доступна на t.me/XillenStealer 🔥');
+  log('V5.0 доступна на t.me/XillenStealer');
   
   const savedTheme = localStorage.getItem('xillen_theme') || 'deep_dark';
   switchTheme(savedTheme);
