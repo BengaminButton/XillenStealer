@@ -464,6 +464,45 @@ html, body {
   fill: currentColor;
 }
 
+.v5-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #ff9800;
+  text-decoration: none;
+  padding: 8px 16px;
+  margin-top: 10px;
+  border: 1px solid rgba(255, 152, 0, 0.3);
+  border-radius: 8px;
+  background: linear-gradient(135deg, rgba(255, 152, 0, 0.1) 0%, rgba(255, 152, 0, 0.15) 100%);
+  transition: all 0.3s ease;
+  font-weight: 600;
+}
+
+.v5-link:hover {
+  background: linear-gradient(135deg, rgba(255, 152, 0, 0.2) 0%, rgba(255, 152, 0, 0.25) 100%);
+  border-color: rgba(255, 152, 0, 0.5);
+  color: #ffb74d;
+  transform: translateY(-2px);
+}
+
+.v5-link svg {
+  width: 16px;
+  height: 16px;
+  animation: v5IconPulse 2s ease-in-out infinite;
+}
+
+@keyframes v5IconPulse {
+  0%, 100% {
+    opacity: 0.9;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+}
+
 .auth-language {
   margin-top: 15px;
   text-align: center;
