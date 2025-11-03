@@ -2655,8 +2655,9 @@ body, .card, .btn, .module-item {
 .banner-pulse {
   display: inline-block;
   margin-left: 15px;
-  animation: bannerPulseText 1s ease-in-out infinite;
-  font-size: 16px;
+  animation: bannerPulseText 2s ease-in-out infinite;
+  font-size: 14px;
+  opacity: 0.9;
 }
 
 .banner-close {
@@ -2687,12 +2688,12 @@ body, .card, .btn, .module-item {
 
 @keyframes bannerPulseText {
   0%, 100% {
-    opacity: 1;
+    opacity: 0.9;
     transform: scale(1);
   }
   50% {
-    opacity: 0.5;
-    transform: scale(1.1);
+    opacity: 0.75;
+    transform: scale(1.02);
   }
 }
 
