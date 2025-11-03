@@ -2578,6 +2578,18 @@ body, .card, .btn, .module-item {
 .banner-icon {
   animation: bannerIconPulse 2s ease-in-out infinite;
   opacity: 0.9;
+  transition: transform 0.3s ease;
+}
+
+@keyframes bannerIconPulse {
+  0%, 100% {
+    opacity: 0.9;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
 }
 
 .banner-text {
