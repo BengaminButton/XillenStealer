@@ -56,6 +56,20 @@ function createWindow() {
   win.once('ready-to-show', () => {
     win.show()
     win.maximize()
+    // Открываем консоль разработчика в dev режиме или по запросу
+    if (process.env.NODE_ENV === 'development' || process.argv.includes('--dev')) {
+      win.webContents.openDevTools()
+    }
+  })
+  
+  // Горячая клавиша для открытия консоли (Ctrl+Shift+I или F12)
+  win.webContents.on('before-input-event', (event, input) => {
+    if (input.control && input.shift && input.key.toLowerCase() === 'i') {
+      win.webContents.toggleDevTools()
+    }
+    if (input.key === 'F12') {
+      win.webContents.toggleDevTools()
+    }
   })
 }
 
@@ -75,28 +89,48 @@ ipcMain.handle('check-password', async (event, password) => {
     const pythonExe = process.platform === 'win32' ? 'python' : 'python3'
     const script = path.join(__dirname, 'builder_backend.py')
     
-    const py = spawn(pythonExe, [script], { stdio: ['pipe', 'pipe', 'pipe'] })
+    const py = spawn(pythonExe, ['-u', script], { stdio: ['pipe', 'pipe', 'pipe'] })
     
     return new Promise((resolve) => {
       let output = ''
+      let errorOutput = ''
       
       py.stdout.on('data', (data) => {
         output += data.toString()
       })
       
-      py.on('close', () => {
+      py.stderr.on('data', (data) => {
+        errorOutput += data.toString()
+        console.error('Python stderr:', data.toString())
+      })
+      
+      py.on('close', (code) => {
         try {
-          const result = JSON.parse(output.trim())
-          resolve(result.result || false)
-        } catch {
+          const trimmed = output.trim()
+          if (trimmed) {
+            const result = JSON.parse(trimmed)
+            resolve(result.result || false)
+          } else {
+            console.error('No output from Python script. Exit code:', code, 'Stderr:', errorOutput)
+            resolve(false)
+          }
+        } catch (e) {
+          console.error('Failed to parse Python output:', output, 'Error:', e, 'Stderr:', errorOutput)
           resolve(false)
         }
       })
       
-      py.stdin.write(JSON.stringify({ cmd: 'check_password', params: { password } }) + '\n')
+      py.on('error', (err) => {
+        console.error('Python spawn error:', err)
+        resolve(false)
+      })
+      
+      const request = JSON.stringify({ cmd: 'check_password', params: { password } }) + '\n'
+      py.stdin.write(request)
       py.stdin.end()
     })
   } catch (error) {
+    console.error('check-password error:', error)
     return false
   }
 })

