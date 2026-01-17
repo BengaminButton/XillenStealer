@@ -1,6 +1,14 @@
 # 🚀 XillenStealer V4.0 - Кросс-платформенный стиллер нового поколения
 
 <div align="center">
+
+### 🎉 **V5.0 УЖЕ ДОСТУПНА!** 🎉
+
+**Проверьте последнюю версию с новыми возможностями!**
+
+</div>
+
+<div align="center">
   <img width="100%" height="auto" alt="XillenStealer V4.0 Banner" src="https://github.com/user-attachments/assets/34155261-6a87-4909-b8db-f95e70336653" style="max-width: 1600px; height: 250px; object-fit: cover; border-radius: 15px;" />
 </div>
 
@@ -373,6 +381,8 @@ cd electron_builder && npm start
 | **Поддерживаются ли игровые лаунчеры?** | Да, Steam, Epic Games, Minecraft, Origin, Uplay, Battle.net |
 | **Есть ли анти-детекция?** | Да, 12+ методов включая VM Detection, Anti-Debug, Process Injection |
 | **Как работает персистентность?** | Автозапуск через Task Scheduler (Windows) и systemd/cron (Linux) |
+| **Куда обращаться с вопросами?** | По всем вопросам пишите **[@XillenStealerSupportBot](https://t.me/XillenStealerSupportBot)** - не пишите в личные сообщения! |
+| **Где официальный канал?** | Официальный канал стиллера: **[t.me/XillenStealer](https://t.me/XillenStealer)** |
 
 </div>
 
@@ -679,9 +689,13 @@ pip install -r requirements.txt
 
 **Создано командой [Xillen Killers](https://t.me/XillenKillers)**
 
-**Разработчик: [@BengaminButton](https://github.com/BengaminButton)**
+**Разработчик: [Xillen Killers](https://github.com/BengaminButton)**
 
-[![Telegram](https://img.shields.io/badge/Telegram-@Bengamin_Button-2CA5E0?logo=telegram)](https://t.me/Bengamin_Button)
+### 📢 **Важно!**
+**По всем вопросам пишите [@XillenStealerSupportBot](https://t.me/XillenStealerSupportBot) - не пишите в личные сообщения!**
+
+[![Telegram Channel](https://img.shields.io/badge/📢%20Официальный%20канал-t.me/XillenStealer-2CA5E0?logo=telegram)](https://t.me/XillenStealer)
+[![Telegram Support](https://img.shields.io/badge/💬%20Поддержка-@XillenStealerSupportBot-2CA5E0?logo=telegram)](https://t.me/XillenStealerSupportBot)
 [![GitHub](https://img.shields.io/badge/GitHub-@BengaminButton-181717?logo=github)](https://github.com/BengaminButton)
 
 </div>
@@ -704,8 +718,12 @@ pip install -r requirements.txt
 
 ### 🚀 **Быстрые ссылки:**
 [![Download ZIP](https://img.shields.io/badge/📥%20Скачать%20ZIP-45MB-blue?style=for-the-badge)](https://github.com/BengaminButton/XillenStealer/archive/refs/heads/main.zip)
-[![Telegram](https://img.shields.io/badge/💬%20Telegram-@Bengamin_Button-2CA5E0?style=for-the-badge)](https://t.me/Bengamin_Button)
+[![Telegram Channel](https://img.shields.io/badge/📢%20Официальный%20канал-t.me/XillenStealer-2CA5E0?style=for-the-badge)](https://t.me/XillenStealer)
+[![Telegram Support](https://img.shields.io/badge/💬%20Поддержка-@XillenStealerSupportBot-2CA5E0?style=for-the-badge)](https://t.me/XillenStealerSupportBot)
 [![GitHub](https://img.shields.io/badge/💻%20GitHub-@BengaminButton-181717?style=for-the-badge)](https://github.com/BengaminButton)
+
+### ⚠️ **Внимание!**
+**По всем вопросам пишите [@XillenStealerSupportBot](https://t.me/XillenStealerSupportBot) - не пишите в личные сообщения!**
 
 ---
 
