@@ -687,9 +687,9 @@ pip install -r requirements.txt
 
 <div align="center">
 
-**Создано командой [Xillen Killers](https://t.me/XillenKillers)**
+**Создано командой [Xillen Corporation](https://t.me/XillenStealer)**
 
-**Разработчик: [Xillen Killers](https://github.com/BengaminButton)**
+**Разработчик: [Xillen Corporation](https://github.com/BengaminButton)**
 
 ### 📢 **Важно!**
 **По всем вопросам пишите [dx_8821_relay_bot](https://t.me/dx_8821_relay_bot) - не пишите в личные сообщения!**
